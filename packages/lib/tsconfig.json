@@ -1,0 +1,10 @@
+{
+  "extends": "@omariosouto/tsconfig/config.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "declarationMap": true,
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@omariosouto/common-http-client",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup",
+    "test": "echo 'There are no tests. But things work trust me!'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "exports": {
+    ".": "./dist/index.js",
+    "./test": "./dist/test.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": "https://github.com/omariosouto/common-http-client",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "axios": "1.8.4"
+  },
+  "devDependencies": {
+    "axios-mock-adapter": "2.1.0",
+    "@omariosouto/tsconfig": "1.13.11",
+    "@types/node": "^22.14.1",
+    "tsup": "^8.4.0",
+    "typescript": "^5.0.0"
+  }
+}
