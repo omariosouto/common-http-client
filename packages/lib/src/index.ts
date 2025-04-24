@@ -1,1 +1,2 @@
-export { default as HttpClient } from 'axios';
+export { createHttpClient } from "./createHttpClient";
+export { HttpClient } from "./createHttpClient/HttpClient";

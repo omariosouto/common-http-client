@@ -1,5 +1,6 @@
-export function httpMock() {
-  // This function is a placeholder for the actual implementation
-  // that generates some output based on the schema.
-  return "Enable HTTP request mocking....";
+import AxiosMockAdapter from "axios-mock-adapter";
+import { HttpClient } from "../createHttpClient/HttpClient";
+
+export function httpMock(httpClientInstance = HttpClient) {
+  return new AxiosMockAdapter(httpClientInstance);
 }
