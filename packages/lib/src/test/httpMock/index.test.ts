@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { httpMock } from "src/test";
+import { createHttpMock, httpMock } from "src/test";
 import { createHttpClient, HttpClient } from "src/index";
 
 describe("httpMock", () => {
   describe("WHEN using the default HttpClient", () => {
     it("always RETURNs it's mock it as expected", async () => {
-      httpMock().onGet("https://example.com").reply(200, {
+      httpMock.on("GET", "https://example.com").reply(200, {
         data: "default",
       });
 
@@ -21,11 +21,12 @@ describe("httpMock", () => {
   describe("WHEN using a custom HttpClient", () => {
     it("always RETURNs it's mock it as expected", async () => {
       const customHttpClient = createHttpClient();
-      httpMock(customHttpClient).onGet("https://example.com").reply(200, {
+      const customHttpMock = createHttpMock(customHttpClient);
+      customHttpMock.on("GET", "https://example.com").reply(200, {
         data: "custom",
       });
 
-      httpMock().onGet("https://example.com").reply(200, {
+      httpMock.on("GET", "https://example.com").reply(200, {
         data: "default",
       });
 
