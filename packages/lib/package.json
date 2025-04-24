@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsup",
-    "test": "echo 'There are no tests. But things work trust me!'"
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "axios-mock-adapter": "2.1.0",
-    "@omariosouto/tsconfig": "1.13.11",
+    "@omariosouto/tsconfig": "2.0.2",
     "@types/node": "^22.14.1",
     "tsup": "^8.4.0",
     "typescript": "^5.0.0"
