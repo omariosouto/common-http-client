@@ -1,1 +1,1 @@
-export * from "./test/httpMock";
+export * from "./test/test";

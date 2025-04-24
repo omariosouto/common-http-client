@@ -1,0 +1,28 @@
+{
+  "name": "example-react-with-http-painel",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@omariosouto/common-http-client": "*",
+    "@omariosouto/common-schema": "1.0.5",
+    "@omariosouto/common-ui-web": "1.1.20",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod-to-json-schema": "^3.24.5"
+  },
+  "devDependencies": {
+    "@omariosouto/tsconfig": "2.0.2",
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.1",
+    "typescript": "^5.8.3"
+  }
+}
