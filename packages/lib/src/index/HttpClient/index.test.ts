@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HttpClient } from "./index";
-import { httpMock } from "../../test";
+import { httpMock } from "src/test";
 
 describe("HttpClient", () => {
   describe("WHEN making an HTTP call", () => {

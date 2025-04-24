@@ -1,2 +1,2 @@
-export { createHttpClient } from "./createHttpClient";
-export { HttpClient } from "./createHttpClient/HttpClient";
+export { createHttpClient } from "./index/createHttpClient";
+export { HttpClient } from "./index/HttpClient";
