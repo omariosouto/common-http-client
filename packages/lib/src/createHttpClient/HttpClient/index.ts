@@ -1,3 +1,3 @@
-import { createHttpClient } from "./index";
+import { createHttpClient } from "../index";
 
 export const HttpClient = createHttpClient();

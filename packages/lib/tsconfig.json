@@ -4,7 +4,8 @@
     "declaration": true,
     "emitDeclarationOnly": false,
     "declarationMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": "."
   },
   "include": ["src"]
 }
