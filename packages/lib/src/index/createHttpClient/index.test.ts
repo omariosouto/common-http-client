@@ -10,13 +10,7 @@ describe("createHttpClient()", () => {
 
   describe("httpClient", () => {
     it("must have the base contract", () => {
-      expect(httpClient.get).toBeTypeOf("function");
-      expect(httpClient.post).toBeTypeOf("function");
-      expect(httpClient.put).toBeTypeOf("function");
-      expect(httpClient.delete).toBeTypeOf("function");
-      expect(httpClient.patch).toBeTypeOf("function");
-      expect(httpClient.head).toBeTypeOf("function");
-      expect(httpClient.options).toBeTypeOf("function");
+      expect(httpClient.request).toBeTypeOf("function");
     })
   })
 })

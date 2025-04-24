@@ -9,7 +9,10 @@ describe("HttpClient", () => {
         data: "mocked data",
       });
 
-      const { data } = await HttpClient.get("https://example.com");
+      const { data } = await HttpClient.request({
+        method: "GET",
+        url: "https://example.com",
+      });
 
       expect(data).toEqual({ data: "mocked data" });
     });

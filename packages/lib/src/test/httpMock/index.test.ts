@@ -9,7 +9,10 @@ describe("httpMock", () => {
         data: "default",
       });
 
-      const { data } = await HttpClient.get("https://example.com");
+      const { data } = await HttpClient.request({
+        method: "GET",
+        url: "https://example.com",
+      });
 
       expect(data).toEqual({ data: "default" });
     });
@@ -26,8 +29,14 @@ describe("httpMock", () => {
         data: "default",
       });
 
-      const customHttpResponse = await customHttpClient.get("https://example.com");
-      const defaultHttpResponse = await HttpClient.get("https://example.com");
+      const customHttpResponse = await customHttpClient.request({
+        method: "GET",
+        url: "https://example.com",
+      });
+      const defaultHttpResponse = await HttpClient.request({
+        method: "GET",
+        url: "https://example.com",
+      });
 
       expect(customHttpResponse.data).toEqual({ data: "custom" });
       expect(defaultHttpResponse.data).toEqual({ data: "default" });

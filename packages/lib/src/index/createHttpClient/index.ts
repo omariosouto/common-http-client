@@ -1,7 +1,25 @@
 import axios from 'axios';
+import { HttpClientInstance, HttpClientInternalInstance, HttpRequestOptions } from "src/contract";
 
-export const createHttpClient = () => {
-  return axios.create();
+export function createHttpClient() {
+  const axiosInstance = axios.create();
+  const httpClientInstance: HttpClientInstance = {
+    async request(options: HttpRequestOptions) {
+      const {
+        method,
+        url,
+      } = options;
+
+      return axiosInstance.request({
+        method,
+        url,
+      });
+    },
+    ...({
+      _instance: axiosInstance,
+    })
+  } as unknown as HttpClientInternalInstance;
+  return httpClientInstance;
 };
 
 /*
@@ -13,8 +31,8 @@ export const createHttpClient = () => {
 
 
 HttpClient.request({
-  method: "GET",
-  url: "https://api.github.com/users/omariosouto", // bookmarks[method]["https://api.github.com/users/:username"]
+  method: "GET", ✅
+  url: "https://api.github.com/users/omariosouto", // bookmarks[method]["https://api.github.com/users/:username"] ✅
   headers: {
     "Content-Type": "application/json",
   },
