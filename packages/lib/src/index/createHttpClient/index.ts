@@ -8,11 +8,13 @@ export function createHttpClient() {
       const {
         method,
         url,
+        body,
       } = options;
 
       return axiosInstance.request({
         method,
         url,
+        data: body,
       });
     },
     ...({

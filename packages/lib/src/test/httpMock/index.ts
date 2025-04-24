@@ -1,18 +1,21 @@
-import { AxiosHeaders, AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
-import { HttpClientInternalInstance, HttpMethod } from "src/contract";
+import { HttpClientHeaders, HttpClientInternalInstance, HttpMethod, HttpRequestOptions } from "src/contract";
 import { HttpClient } from "src/index";
+
+type HttpMockHistoryEntry = {} & HttpRequestOptions;
+type HttpMockHistory = HttpMockHistoryEntry[];
 
 type MockArrayResponse = [
   status: number,
   data?: any,
-  headers?: AxiosHeaders
+  headers?: HttpClientHeaders
 ];
 
 type MockObjectResponse = {
   status: number;
   data: any;
-  headers?: AxiosHeaders,
+  headers?: HttpClientHeaders,
   config?: AxiosRequestConfig
 };
 
@@ -25,24 +28,28 @@ type CallbackResponseSpecFunc = (
 type ResponseSpecFunc = <T = any>(
   statusOrCallback: number | CallbackResponseSpecFunc,
   data?: T,
-  headers?: AxiosHeaders
+  headers?: HttpClientHeaders
 ) => HttpMockAdapter;
 
 type HttpMockAdapter = {
   on: (method: HttpMethod, url: string) => {
     reply: ResponseSpecFunc;
     replyOnce: ResponseSpecFunc;
-    // TODO: Add support for these too
-    // networkError(): HttpMockAdapter;
-    // networkErrorOnce(): HttpMockAdapter;
-    // timeout(): HttpMockAdapter;
-    // timeoutOnce(): HttpMockAdapter;
+    replyNetworkError(): HttpMockAdapter;
+    replyNetworkErrorOnce(): HttpMockAdapter;
+    replyTimeout(): HttpMockAdapter;
+    replyTimeoutOnce(): HttpMockAdapter;
 
     // withDelayInMs(delay: number): RequestHandler;
     // passThrough(): HttpMockAdapter;
     // abortRequest(): HttpMockAdapter;
     // abortRequestOnce(): HttpMockAdapter;
-  }
+  },
+  reset(): void;
+  resetHandlers(): void;
+  resetHistory(): void;
+  restore(): void;
+  history: HttpMockHistory;
 }
 
 function uppercaseFirst(str: string) {
@@ -55,6 +62,25 @@ export function createHttpMock(httpClientInstance = HttpClient): HttpMockAdapter
   const mock = new AxiosMockAdapter(_httpClientInstance._instance);
 
   const newHttpMock: HttpMockAdapter = {
+    reset() {
+      mock.reset();
+    },
+    resetHandlers() {
+      mock.resetHandlers();
+    },
+    resetHistory() {
+      mock.resetHistory();
+    },
+    restore() {
+      mock.restore();
+    },
+    get history() {
+      return mock.history.map(({ data, ...item}) => ({
+        ...item,
+        body: data,
+        method: item.method?.toUpperCase(),
+      })) as HttpRequestOptions[];
+    },
     on(method, url) {
       type MockMethod = "onGet" | "onPost" | "onPut" | "onPatch" | "onDelete" | "onHead" | "onOptions";
       const mockMethod = `on${uppercaseFirst(method.toLocaleLowerCase())}` as MockMethod;
@@ -68,6 +94,22 @@ export function createHttpMock(httpClientInstance = HttpClient): HttpMockAdapter
           mockOn.replyOnce(...args);
           return newHttpMock;
         },
+        replyNetworkError() {
+          mockOn.networkError();
+          return newHttpMock;
+        },
+        replyNetworkErrorOnce() {
+          mockOn.networkErrorOnce();
+          return newHttpMock;
+        },
+        replyTimeout() {
+          mockOn.timeout();
+          return newHttpMock;
+        },
+        replyTimeoutOnce() {
+          mockOn.timeoutOnce();
+          return newHttpMock;
+        }
       };
     },
   };

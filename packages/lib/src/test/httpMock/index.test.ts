@@ -22,22 +22,32 @@ describe("httpMock", () => {
     it("always RETURNs it's mock it as expected", async () => {
       const customHttpClient = createHttpClient();
       const customHttpMock = createHttpMock(customHttpClient);
-      customHttpMock.on("GET", "https://example.com").reply(200, {
-        data: "custom",
-      });
 
-      httpMock.on("GET", "https://example.com").reply(200, {
-        data: "default",
-      });
+      customHttpMock
+        .on("POST", "https://example.com")
+        .reply(200, {
+          data: "custom",
+        })
+
+      httpMock
+        .on("GET", "https://example.com")
+        .reply(200, {
+          data: "default",
+        });
 
       const customHttpResponse = await customHttpClient.request({
-        method: "GET",
+        method: "POST",
         url: "https://example.com",
+        body: {
+          data: "custom payload",
+        }
       });
       const defaultHttpResponse = await HttpClient.request({
         method: "GET",
         url: "https://example.com",
       });
+
+      console.log(customHttpMock.history[0]);
 
       expect(customHttpResponse.data).toEqual({ data: "custom" });
       expect(defaultHttpResponse.data).toEqual({ data: "default" });
