@@ -25,7 +25,7 @@ export async function getDemoData() {
     bookmarks,
   })
   .then((response) => { // TODO: make the autocomplete
-    console.log("[response]", response);
+    console.log("[response]", response.data);
     return response.data;
   })
 }
