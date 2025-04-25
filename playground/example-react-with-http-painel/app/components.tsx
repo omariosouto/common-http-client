@@ -3,8 +3,11 @@
 import { Box, Button, Text } from "@omariosouto/common-ui-web/components";
 import { getDemoData } from "./http";
 import { useAsyncStateQuery } from "@omariosouto/common-ui-web/state";
+import React from "react";
 
 export function ClientSideScreen() {
+  const [success, setSuccess] = React.useState();
+  const [err, setErr] = React.useState();
   const { data } = useAsyncStateQuery({
     // staleTime: 2000 * 60 * 5, // 5 minutes
     staleTime: 10 * 1000,
@@ -19,7 +22,7 @@ export function ClientSideScreen() {
   return (
     <Box>
       <Text>
-        Hello! I'm an example that makes HTTP calls
+        SSG
       </Text>
       
       <Text>
@@ -31,14 +34,28 @@ export function ClientSideScreen() {
           await getDemoData()
           .then((response) => {
             console.log(response);
+            setSuccess(response);
           })
           .catch((error) => {
             console.warn("Error", error);
+            setErr(error);
           });
         }}
       >
         Click me!
       </Button>
+      <Box>
+        <Text>
+          success:
+          {JSON.stringify(success)}
+        </Text>
+      </Box>
+      <Box>
+        <Text>
+          err:
+          {JSON.stringify(err)}
+        </Text>
+      </Box>
     </Box>
   );
 }
