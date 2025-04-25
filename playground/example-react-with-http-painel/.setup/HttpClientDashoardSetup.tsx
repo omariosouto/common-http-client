@@ -13,7 +13,11 @@ export function HttpClientDashoardSetup({
   httpClients,
   bookmarks
 }: HttpClientDashoard) {
-  const [intercepted, setIntercepted] = React.useState({});
+  const [intercepted, setIntercepted] = React.useState({
+    "demo-request::get": {
+      "message": "mocked-api-requests"
+    }
+  });
 
   httpClients.forEach((httpClient) => {
     httpClient.setBookmarkProxy(intercepted);
