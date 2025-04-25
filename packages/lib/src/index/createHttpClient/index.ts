@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { HttpClientInstance, HttpClientInternalInstance, HttpRequestOptions } from "../../contract/index";
+import { bookmarkMock } from "../bookmarkMock";
 
 export function createHttpClient(): HttpClientInstance {
   const axiosInstance = axios.create();
@@ -7,11 +8,9 @@ export function createHttpClient(): HttpClientInstance {
   deduplicateRequestsInterceptor(axiosInstance);
   circuitBreakerInterceptor(axiosInstance);
 
-  let bookmarkProxy: any = {};
-
   const httpClientInstance: HttpClientInstance = {
     setBookmarkProxy(intercepted: any) {
-      bookmarkProxy = intercepted;
+      bookmarkMock.set(intercepted);
     },
     async request(options: HttpRequestOptions) {
       let requestUrl;
@@ -26,7 +25,9 @@ export function createHttpClient(): HttpClientInstance {
 
       if(bookmarks[url]) {
         requestUrl = bookmarks[url].url;
+        const bookmarkProxy = bookmarkMock.get();
         const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
+        console.log("bookmarkProxy", bookmarkProxy);
         const response = {
           data: bookmarkProxy[bookmarkProxyKey],
         };

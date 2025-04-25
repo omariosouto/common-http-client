@@ -1,16 +1,14 @@
 "use client";
 import React from "react";
-import { HttpClientBookmarks, HttpClientInstance } from "@omariosouto/common-http-client";
+import { bookmarkMock, HttpClientBookmarks } from "@omariosouto/common-http-client";
 import { schemaGenerate } from "@omariosouto/common-schema/test";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 interface HttpClientDashoard {
-  httpClients: HttpClientInstance[];
   bookmarks: HttpClientBookmarks;
 }
 
 export function HttpClientDashoardSetup({
-  httpClients,
   bookmarks
 }: HttpClientDashoard) {
   const [intercepted, setIntercepted] = React.useState({
@@ -19,9 +17,7 @@ export function HttpClientDashoardSetup({
     }
   });
 
-  httpClients.forEach((httpClient) => {
-    httpClient.setBookmarkProxy(intercepted);
-  });
+  bookmarkMock.set(intercepted);
 
   return (
     <>
