@@ -1,8 +1,11 @@
+import { HttpClient } from "@omariosouto/common-http-client";
 import { ClientSideScreen } from "./components";
 import { getDemoData } from "./http";
 
-export default async function Screen() {
-  // TODO: This api call must also be intercepted by the HttpClient
+
+export default withHttpClient(Screen)
+
+async function Screen() {
   const ssr = await getDemoData();
 
   return (
@@ -12,4 +15,16 @@ export default async function Screen() {
       <ClientSideScreen />
     </>
   )
+}
+
+// Move this to a file that is not "use client"
+function withHttpClient(Component: any) {
+  return async function WithHttpClient(props: any) {
+    const searchParams = await props.searchParams;
+    if(searchParams.http_state) {
+      HttpClient.setBookmarkProxy(JSON.parse(atob(searchParams.http_state)));
+    }
+
+    return <Component {...props} />;
+  };
 }

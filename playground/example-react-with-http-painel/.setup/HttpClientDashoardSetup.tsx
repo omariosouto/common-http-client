@@ -47,7 +47,7 @@ export function HttpClientDashoardSetup({
                 <td>
                   <ul className="pl-10 list-disc">
                     {Object.entries(config.methods).map(([method, { request, response }]: any) => {
-                      console.log(response);
+                      // console.log(response);
                       return (
                         <li key={bookmark + method}>
                           <div>
