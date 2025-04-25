@@ -21,6 +21,7 @@ export type HttpClientHeaders = AxiosHeaders;
 
 export type HttpClientInstance = {
   request: (options: HttpRequestOptions) => Promise<any>;
+  setBookmarkProxy: (intercepted: any) => void;
 }
 
 export type HttpClientInternalInstance = HttpClientInstance & {

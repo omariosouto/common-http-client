@@ -15,9 +15,9 @@ export function HttpClientDashoardSetup({
 }: HttpClientDashoard) {
   const [intercepted, setIntercepted] = React.useState({});
 
-  React.useEffect(() => {
-    console.log("run!");
-  }, [intercepted]);
+  httpClients.forEach((httpClient) => {
+    httpClient.setBookmarkProxy(intercepted);
+  });
 
   return (
     <>

@@ -7,7 +7,12 @@ export function createHttpClient(): HttpClientInstance {
   deduplicateRequestsInterceptor(axiosInstance);
   circuitBreakerInterceptor(axiosInstance);
 
+  let bookmarkProxy: any = {};
+
   const httpClientInstance: HttpClientInstance = {
+    setBookmarkProxy(intercepted: any) {
+      bookmarkProxy = intercepted;
+    },
     async request(options: HttpRequestOptions) {
       let requestUrl;
       const {
@@ -18,7 +23,16 @@ export function createHttpClient(): HttpClientInstance {
         bookmarks,
       } = options;
       requestUrl = url;
-      if(bookmarks[url]) requestUrl = bookmarks[url].url
+
+      if(bookmarks[url]) {
+        requestUrl = bookmarks[url].url;
+        const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
+        const response = {
+          data: bookmarkProxy[bookmarkProxyKey],
+        };
+
+        if(bookmarkProxy[bookmarkProxyKey]) return response;
+      }
 
       return axiosInstance.request({
         method,

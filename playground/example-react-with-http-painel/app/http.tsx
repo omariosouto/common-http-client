@@ -24,7 +24,8 @@ export async function getDemoData() {
     method: "GET",
     bookmarks,
   })
-  .then(({ data }) => { // TODO: make the autocomplete
-    return data;
+  .then((response) => { // TODO: make the autocomplete
+    console.log("[response]", response);
+    return response.data;
   })
 }
