@@ -3,7 +3,7 @@ import React from "react";
 import { bookmarkMock, HttpClientBookmarks } from "@omariosouto/common-http-client";
 import { schemaGenerate } from "@omariosouto/common-schema/test";
 import { zodToJsonSchema } from "zod-to-json-schema";
-
+// TODO: Move this to common-ui-web
 interface HttpClientDashoard {
   bookmarks: HttpClientBookmarks;
 }
