@@ -28,6 +28,7 @@ export default async function RootLayout({
     <html lang="en-US" suppressHydrationWarning>
       <body>
         <RootErrorBoundary>
+          {/* TODO: Move this to a decorator to be able to run on SSR too */}
           <HttpClientDashoard />
           <AsyncStateProvider>
             <ThemeProvider
