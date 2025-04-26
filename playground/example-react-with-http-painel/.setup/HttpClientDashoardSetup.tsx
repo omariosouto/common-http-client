@@ -3,6 +3,7 @@ import React from "react";
 import { bookmarkMock, HttpClientBookmarks } from "@omariosouto/common-http-client";
 import { schemaGenerate } from "@omariosouto/common-schema/test";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { Button } from "@omariosouto/common-ui-web/components";
 // TODO: Move this to common-ui-web
 interface HttpClientDashoard {
   bookmarks: HttpClientBookmarks;
@@ -16,12 +17,41 @@ export function HttpClientDashoardSetup({
       "message": "mocked-api-requests"
     }
   });
+  const [httpStateURL, setHttpStateURL] = React.useState("");
 
   bookmarkMock.set(intercepted);
+
+  React.useEffect(() => {
+    // get http_state from url
+    const urlParams = new URLSearchParams(window.location.search);
+    const httpState = urlParams.get("http_state");
+    if (httpState) {
+      const decoded = atob(httpState);
+      const parsed = JSON.parse(decoded);
+      setIntercepted(parsed);
+      bookmarkMock.set(parsed);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    setHttpStateURL(window.location.origin + window.location.pathname + `?http_state=${btoa(JSON.stringify(intercepted))}`);
+  }, [intercepted]);
 
   return (
     <>
       HTTP Visualizer ON: {process.env.NODE_ENV}
+      <Button
+        data-url={httpStateURL}
+        onClick={(e) => {
+          const url = (e.target as HTMLButtonElement).dataset.url;
+          if (!url) {
+            return;
+          }
+          navigator.clipboard.writeText(url);
+        }}
+      >
+        Copy URL - {httpStateURL}
+      </Button>
       <table>
         <thead>
           <tr>
