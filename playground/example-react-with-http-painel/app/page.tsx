@@ -12,6 +12,10 @@ async function Screen() {
     <>
       SSR - {JSON.stringify(ssr)}
       <br />
+      {/* 
+      TODO: Add example of `onUploadProgress`
+      TODO: Add example of `onDownloadProgress`
+      */}
       <ClientSideScreen />
     </>
   )
