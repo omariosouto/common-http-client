@@ -1,6 +1,34 @@
-import axios, { AxiosInstance } from 'axios';
-import { HttpClientInstance, HttpClientInternalInstance, HttpRequestOptions } from "../../contract/index";
+import axios, { AxiosHeaders, AxiosInstance } from 'axios';
 import { bookmarkMock } from "../bookmarkMock";
+
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+export type HttpClientBookmarks = any;
+
+export type HttpRequestOptions = {
+  method: HttpMethod;
+  url: string;
+  body?: any;
+  // TODO: Bookmark
+  bookmarks?: HttpClientBookmarks;
+  // TODO: Circuit Breaker
+  retry?: number;
+  // retryDelay?: number;
+  // TODO: Memory Cache
+  // ???
+}
+
+export type HttpClientHeaders = AxiosHeaders;
+
+export type HttpClientInstance = {
+  request: (options: HttpRequestOptions) => Promise<any>;
+  setBookmarkProxy: (intercepted: any) => void;
+}
+
+export type HttpClientInternalInstance = HttpClientInstance & {
+  _instance: AxiosInstance;
+}
+
 
 export function createHttpClient(): HttpClientInstance {
   const axiosInstance = axios.create();
