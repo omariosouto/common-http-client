@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createHttpClient, HttpClient } from "src/index";
-import { httpMock } from "src/test";
+import { createHttpClient, HttpClient } from "../../index";
+import { httpMock } from "../test";
 
 describe("httpMock", () => {
   describe("WHEN using the default HttpClient", () => {
@@ -9,6 +9,17 @@ describe("httpMock", () => {
         data: "default",
       });
 
+      const { data } = await HttpClient.request({
+        method: "GET",
+        url: "https://example.com",
+      });
+
+      expect(data).toEqual({ data: "default" });
+    });
+  });
+
+  describe("WHEN using the default HttpClient", () => {
+    it("always RETURNs it's mock it as expected", async () => {
       const { data } = await HttpClient.request({
         method: "GET",
         url: "https://example.com",
