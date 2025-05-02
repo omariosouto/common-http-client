@@ -18,14 +18,14 @@ describe("httpMock", () => {
     });
   });
 
-  describe("WHEN using the default HttpClient", () => {
-    it("always RETURNs it's mock it as expected", async () => {
-      const { data } = await HttpClient.request({
-        method: "GET",
-        url: "https://example.com",
-      });
-
-      expect(data).toEqual({ data: "default" });
+  describe("WHEN using the default HttpClient AFTER it has been set once", () => {
+    it("If no mock was set, an error must be thrown", async () => {
+      await expect(
+        HttpClient.request({
+          method: "GET",
+          url: "https://example.com",
+        })
+      ).rejects.toThrowError("Request failed with status code 404");
     });
   });
 
