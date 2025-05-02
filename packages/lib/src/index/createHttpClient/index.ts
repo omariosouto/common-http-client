@@ -56,7 +56,6 @@ export function createHttpClient(): HttpClientInstance {
         requestUrl = bookmarks[url].url;
         const bookmarkProxy = bookmarkMock.get();
         const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
-        console.log("bookmarkProxy", bookmarkProxy);
         const response = {
           data: bookmarkProxy[bookmarkProxyKey],
         };
