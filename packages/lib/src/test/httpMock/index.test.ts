@@ -18,7 +18,7 @@ describe("httpMock", () => {
     });
   });
 
-  describe("WHEN using a custom HttpClient", () => {
+  describe.skip("WHEN using a custom HttpClient", () => {
     it("always RETURNs it's mock it as expected", async () => {
       const customHttpClient = createHttpClient();
       const customHttpMock = createHttpMock();

@@ -114,8 +114,6 @@ function circuitBreakerInterceptor(axiosInstance: AxiosInstance) {
   axiosInstance.interceptors.response.use(undefined, async (error) => {
     const config = error.config;
 
-    console.log("[CB]", config);
-
     // Verifica se há configuração e se o retry está definido
     if (!config || typeof config.retry !== 'number') {
       return Promise.reject(error);
