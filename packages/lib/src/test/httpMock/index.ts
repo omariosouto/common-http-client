@@ -57,6 +57,7 @@ function uppercaseFirst(str: string) {
 }
 
 export function createHttpMock(): HttpMockAdapter {
+  // TODO: This must be live updated
   const mocks = getInstances().map((instance) => {
     const mock = new AxiosMockAdapter(instance);
     return mock;
@@ -99,38 +100,47 @@ export function createHttpMock(): HttpMockAdapter {
       }, [] as HttpMockHistory);
     },
     on(method, url) {
-      type MockMethod = "onGet" | "onPost" | "onPut" | "onPatch" | "onDelete" | "onHead" | "onOptions";
-      const mockMethod = `on${uppercaseFirst(method.toLocaleLowerCase())}` as MockMethod;
-      const mock = mocks[0] as any;
-      // console.log("[mock]", mock);
-      const mockOn = mock[mockMethod](url);
+      type MockMethod =
+        | "onGet"
+        | "onPost"
+        | "onPut"
+        | "onPatch"
+        | "onDelete"
+        | "onHead"
+        | "onOptions";
+    
+      const mockMethod = `on${uppercaseFirst(method.toLowerCase())}` as MockMethod;
+    
+      const mockOns = mocks.map((mock) => mock[mockMethod](url));
+      console.log("mocks", mocks.length);
+    
       return {
-        reply(...args) { // TODO: Organize the args better
-          mockOn.reply(...args);
+        reply(...args) {
+          mockOns.forEach((mockOn) => mockOn.reply(...args));
           return newHttpMock;
         },
-        replyOnce(...args) { // TODO: Organize the args better
-          mockOn.replyOnce(...args);
+        replyOnce(...args) {
+          mockOns.forEach((mockOn) => mockOn.replyOnce(...args));
           return newHttpMock;
         },
         replyNetworkError() {
-          mockOn.networkError();
+          mockOns.forEach((mockOn) => mockOn.networkError());
           return newHttpMock;
         },
         replyNetworkErrorOnce() {
-          mockOn.networkErrorOnce();
+          mockOns.forEach((mockOn) => mockOn.networkErrorOnce());
           return newHttpMock;
         },
         replyTimeout() {
-          mockOn.timeout();
+          mockOns.forEach((mockOn) => mockOn.timeout());
           return newHttpMock;
         },
         replyTimeoutOnce() {
-          mockOn.timeoutOnce();
+          mockOns.forEach((mockOn) => mockOn.timeoutOnce());
           return newHttpMock;
-        }
+        },
       };
-    },
+    }
   };
 
   return newHttpMock;
