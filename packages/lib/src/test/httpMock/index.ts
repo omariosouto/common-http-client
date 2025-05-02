@@ -57,40 +57,38 @@ function uppercaseFirst(str: string) {
 }
 
 export function createHttpMock(): HttpMockAdapter {
-  // TODO: This must be live updated
-  const mocks = getInstances().map((instance) => {
-    const mock = new AxiosMockAdapter(instance);
-    return mock;
-  });
+  let internalMocks: AxiosMockAdapter[] = [];
+
+  function refreshMocks() {
+    const currentInstances = getInstances();
+    internalMocks = currentInstances.map((instance) => {
+      const existing = internalMocks.find(({ axiosInstance }: any) => {
+        return axiosInstance === instance;
+      });
+      return existing || new AxiosMockAdapter(instance);
+    });
+  }
 
   const newHttpMock: HttpMockAdapter = {
     reset() {
-      mocks.forEach((mock) => {
-        mock.reset();
-      });
+      refreshMocks();
+      internalMocks.forEach((mock) => mock.reset());
     },
     resetHandlers() {
-      mocks.forEach((mock) => {
-        mock.resetHandlers();
-      });
+      refreshMocks();
+      internalMocks.forEach((mock) => mock.resetHandlers());
     },
     resetHistory() {
-      mocks.forEach((mock) => {
-        mock.resetHistory();
-      });
+      refreshMocks();
+      internalMocks.forEach((mock) => mock.resetHistory());
     },
     restore() {
-      mocks.forEach((mock) => {
-        mock.restore();
-      });
+      refreshMocks();
+      internalMocks.forEach((mock) => mock.restore());
     },
     get history() {
-      // return mock.history.map(({ data, ...item}) => ({
-      //   ...item,
-      //   body: data,
-      //   method: item.method?.toUpperCase(),
-      // })) as HttpRequestOptions[];
-      return mocks.reduce((acc, mock) => {
+      refreshMocks();
+      return internalMocks.reduce((acc, mock) => {
         const history = mock.history.map(({ data, ...item }) => ({
           ...item,
           body: data,
@@ -100,6 +98,8 @@ export function createHttpMock(): HttpMockAdapter {
       }, [] as HttpMockHistory);
     },
     on(method, url) {
+      refreshMocks();
+
       type MockMethod =
         | "onGet"
         | "onPost"
@@ -108,12 +108,10 @@ export function createHttpMock(): HttpMockAdapter {
         | "onDelete"
         | "onHead"
         | "onOptions";
-    
+
       const mockMethod = `on${uppercaseFirst(method.toLowerCase())}` as MockMethod;
-    
-      const mockOns = mocks.map((mock) => mock[mockMethod](url));
-      console.log("mocks", mocks.length);
-    
+      const mockOns = internalMocks.map((mock) => mock[mockMethod](url));
+
       return {
         reply(...args) {
           mockOns.forEach((mockOn) => mockOn.reply(...args));
@@ -140,7 +138,7 @@ export function createHttpMock(): HttpMockAdapter {
           return newHttpMock;
         },
       };
-    }
+    },
   };
 
   return newHttpMock;
