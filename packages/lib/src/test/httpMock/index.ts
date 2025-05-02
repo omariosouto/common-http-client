@@ -1,7 +1,6 @@
 import { AxiosRequestConfig } from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
-import { HttpClientHeaders, HttpClientInternalInstance, HttpMethod, HttpRequestOptions } from "src/contract";
-import { HttpClient } from "../../index";
+import { HttpClient, HttpClientHeaders, HttpClientInternalInstance, HttpMethod, HttpRequestOptions } from "../../index";
 
 type HttpMockHistoryEntry = {} & HttpRequestOptions;
 type HttpMockHistory = HttpMockHistoryEntry[];
@@ -39,7 +38,6 @@ type HttpMockAdapter = {
     replyNetworkErrorOnce(): HttpMockAdapter;
     replyTimeout(): HttpMockAdapter;
     replyTimeoutOnce(): HttpMockAdapter;
-
     // withDelayInMs(delay: number): RequestHandler;
     // passThrough(): HttpMockAdapter;
     // abortRequest(): HttpMockAdapter;
