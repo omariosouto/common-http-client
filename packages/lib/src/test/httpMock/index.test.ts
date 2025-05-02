@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createHttpMock, httpMock } from "src/test";
 import { createHttpClient, HttpClient } from "src/index";
+import { createHttpMock, httpMock } from "src/test";
 
 describe("httpMock", () => {
   describe("WHEN using the default HttpClient", () => {
@@ -21,7 +21,7 @@ describe("httpMock", () => {
   describe("WHEN using a custom HttpClient", () => {
     it("always RETURNs it's mock it as expected", async () => {
       const customHttpClient = createHttpClient();
-      const customHttpMock = createHttpMock(customHttpClient);
+      const customHttpMock = createHttpMock();
 
       customHttpMock
         .on("POST", "https://example.com")

@@ -1,6 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
-import { HttpClient, HttpClientHeaders, HttpClientInternalInstance, HttpMethod, HttpRequestOptions } from "../../index";
+import { HttpClientHeaders, HttpMethod, HttpRequestOptions } from "../../index";
+import { getInstances } from "../../index/createHttpClient/instances";
 
 type HttpMockHistoryEntry = {} & HttpRequestOptions;
 type HttpMockHistory = HttpMockHistoryEntry[];
@@ -55,33 +56,53 @@ function uppercaseFirst(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function createHttpMock(httpClientInstance = HttpClient): HttpMockAdapter {
-  const _httpClientInstance: HttpClientInternalInstance = httpClientInstance as HttpClientInternalInstance;
-  const mock = new AxiosMockAdapter(_httpClientInstance._instance);
+export function createHttpMock(): HttpMockAdapter {
+  const mocks = getInstances().map((instance) => {
+    const mock = new AxiosMockAdapter(instance);
+    return mock;
+  });
 
   const newHttpMock: HttpMockAdapter = {
     reset() {
-      mock.reset();
+      mocks.forEach((mock) => {
+        mock.reset();
+      });
     },
     resetHandlers() {
-      mock.resetHandlers();
+      mocks.forEach((mock) => {
+        mock.resetHandlers();
+      });
     },
     resetHistory() {
-      mock.resetHistory();
+      mocks.forEach((mock) => {
+        mock.resetHistory();
+      });
     },
     restore() {
-      mock.restore();
+      mocks.forEach((mock) => {
+        mock.restore();
+      });
     },
     get history() {
-      return mock.history.map(({ data, ...item}) => ({
-        ...item,
-        body: data,
-        method: item.method?.toUpperCase(),
-      })) as HttpRequestOptions[];
+      // return mock.history.map(({ data, ...item}) => ({
+      //   ...item,
+      //   body: data,
+      //   method: item.method?.toUpperCase(),
+      // })) as HttpRequestOptions[];
+      return mocks.reduce((acc, mock) => {
+        const history = mock.history.map(({ data, ...item }) => ({
+          ...item,
+          body: data,
+          method: item.method?.toUpperCase(),
+        })) as HttpRequestOptions[];
+        return [...acc, ...history];
+      }, [] as HttpMockHistory);
     },
     on(method, url) {
       type MockMethod = "onGet" | "onPost" | "onPut" | "onPatch" | "onDelete" | "onHead" | "onOptions";
       const mockMethod = `on${uppercaseFirst(method.toLocaleLowerCase())}` as MockMethod;
+      const mock = mocks[0] as any;
+      // console.log("[mock]", mock);
       const mockOn = mock[mockMethod](url);
       return {
         reply(...args) { // TODO: Organize the args better

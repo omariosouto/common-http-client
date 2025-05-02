@@ -1,5 +1,6 @@
 import axios, { AxiosHeaders, AxiosInstance } from 'axios';
 import { bookmarkMock } from "../bookmarkMock";
+import { addInstance } from "./instances";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -29,9 +30,9 @@ export type HttpClientInternalInstance = HttpClientInstance & {
   _instance: AxiosInstance;
 }
 
-
 export function createHttpClient(): HttpClientInstance {
   const axiosInstance = axios.create();
+  addInstance(axiosInstance);
 
   deduplicateRequestsInterceptor(axiosInstance);
   circuitBreakerInterceptor(axiosInstance);
@@ -47,7 +48,7 @@ export function createHttpClient(): HttpClientInstance {
         url,
         body,
         retry,
-        bookmarks,
+        bookmarks = {},
       } = options;
       requestUrl = url;
 
