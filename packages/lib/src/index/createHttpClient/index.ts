@@ -24,6 +24,7 @@ export type HttpClientBookmarks = {
 export type HttpRequestOptions = {
   method: HttpMethod;
   url: string;
+  params?: Record<string, string>;
   body?: any;
   bookmarks?: HttpClientBookmarks;
   retry?: number;
@@ -68,6 +69,7 @@ export function createHttpClient(): HttpClientInstance {
         body,
         retry,
         staleTime,
+        params,
         bookmarks = {},
       } = options;
       const isURLBookmark = bookmarks[url] !== undefined;
@@ -91,6 +93,7 @@ export function createHttpClient(): HttpClientInstance {
         retry,
         data: body,
         staleTime,
+        params,
         bookmark,
       } as any);
     },
