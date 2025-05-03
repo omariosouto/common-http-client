@@ -12,9 +12,9 @@
   "license": "MIT",
   "description": "",
   "exports": {
-    ".": "./src/index.ts",
-    "./test": "./src/test.ts",
-    "./test-setup": "./src/test-setup.ts"
+    ".": "./dist/index.js",
+    "./test-setup": "./dist/test-setup.js",
+    "./test": "./dist/test.js"
   },
   "files": [
     "dist"

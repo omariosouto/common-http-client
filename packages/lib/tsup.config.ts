@@ -41,5 +41,6 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   dts: true,
   outDir: 'dist',
+  bundle: true,
   clean: true
 });
