@@ -61,6 +61,6 @@ function getCacheKey(config: AxiosRequestConfig): string {
   return `${config.method?.toUpperCase()}:${url}?${params}`;
 }
 
-export function clearCache() {
+export function httpClientClearCache() {
   cache.clear();
 }

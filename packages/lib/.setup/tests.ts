@@ -1,8 +1,8 @@
 import { beforeEach } from "vitest";
-import { httpMock } from "../src/test";
-import { clearCache } from "../src/index";
+import { httpClientMockReset } from "../src/test";
+import { httpClientClearCache } from "../src/index";
 
 beforeEach(() => {
-  httpMock.reset();
-  clearCache();
+  httpClientMockReset();
+  httpClientClearCache();
 });

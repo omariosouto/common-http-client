@@ -193,4 +193,9 @@ export function createHttpMock(): HttpMockAdapter {
   return newHttpMock;
 }
 
-export const httpMock = createHttpMock();
+export const httpClientMock = createHttpMock();
+
+export const httpClientMockReset = () => {
+  httpClientMock.reset();
+  httpClientMock.restore();
+}

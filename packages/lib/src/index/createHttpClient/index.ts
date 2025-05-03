@@ -4,7 +4,7 @@ import { addInstance } from "./instances";
 import { SchemaType } from "@omariosouto/common-schema";
 import { deduplicateRequestsInterceptor } from "./deduplicateRequestsInterceptor";
 
-export { clearCache } from "./deduplicateRequestsInterceptor";
+export { httpClientClearCache } from "./deduplicateRequestsInterceptor";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 

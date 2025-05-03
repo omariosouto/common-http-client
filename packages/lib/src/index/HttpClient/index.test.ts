@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { s } from "@omariosouto/common-schema";
 import { schemaGenerate } from "@omariosouto/common-schema/test";
 import { HttpClient } from "./index";
-import { httpMock } from "../../test";
+import { httpClientMock } from "../../test";
 import { HttpClientBookmarks } from "../createHttpClient";
 
 describe("HttpClient", () => {
   describe("WHEN making an HTTP call", () => {
     it("RETURNs it's mock it as expected", async () => {
-      httpMock.on("GET", "https://example.com").reply(200, {
+      httpClientMock.on("GET", "https://example.com").reply(200, {
         message: "mocked data",
       });
 
@@ -42,7 +42,7 @@ describe("HttpClient", () => {
         const payloadMock = schemaGenerate(DemoWireInSchema);
 
         // 1. Add the proper mocks relative to the bookmarks
-        httpMock.set(
+        httpClientMock.set(
 
           {
             "demo-request": {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { s } from "@omariosouto/common-schema";
 import { schemaGenerate } from "@omariosouto/common-schema/test";
 import { HttpClient, HttpClientBookmarks } from "./index";
-import { httpMock } from "../test";
+import { httpClientMock } from "../test";
 
 const DemoWireInSchema = s.object({
   message: s.string(),
@@ -23,7 +23,7 @@ describe("HttpClient Usage", () => {
   describe("WHEN making a query HTTP call", () => {
     it("RETURNs the content as expected", async () => {
       // 0. Set the mock
-      httpMock.on("GET", "https://site.com/api").reply(200, {
+      httpClientMock.on("GET", "https://site.com/api").reply(200, {
         content: "mocked data",
       });
 
@@ -41,7 +41,7 @@ describe("HttpClient Usage", () => {
     describe("AND this http call has query parameters", () => {
       it("RETURNs the content as expected", async () => {
         // 0. Set the mock
-        httpMock.on("GET", "https://site.com/api").reply(200, {
+        httpClientMock.on("GET", "https://site.com/api").reply(200, {
           content: "mocked data with query",
         });
 
@@ -56,8 +56,8 @@ describe("HttpClient Usage", () => {
         expect(response.body).toEqual({ content: "mocked data with query" });
         expect(response.status).toEqual(200);
         // 2.1. Validate the request
-        expect(httpMock.history.length).toEqual(1);
-        expect(httpMock.history[0]?.params).toEqual({
+        expect(httpClientMock.history.length).toEqual(1);
+        expect(httpClientMock.history[0]?.params).toEqual({
           param1: "1",
           param2: "2",
         });
@@ -68,7 +68,7 @@ describe("HttpClient Usage", () => {
     it("RETURNs the content as expected", async () => {
       // 0. Set the mock
       const payloadMock = schemaGenerate(DemoWireInSchema);
-      httpMock.set({
+      httpClientMock.set({
         "demo-request": {
           "get": {
             status: 200,
@@ -92,7 +92,7 @@ describe("HttpClient Usage", () => {
       it("RETURNs the content as expected", async () => {
         // 0. Set the mock
         const payloadMock = schemaGenerate(DemoWireInSchema);
-        httpMock.set({
+        httpClientMock.set({
           "demo-request": {
             "get": {
               status: 201,
@@ -113,8 +113,8 @@ describe("HttpClient Usage", () => {
         expect(response.body).toEqual(payloadMock);
         expect(response.status).toEqual(201);
         // 2.1. Validate the request
-        expect(httpMock.history.length).toEqual(1);
-        expect(httpMock.history[0]?.params).toEqual({
+        expect(httpClientMock.history.length).toEqual(1);
+        expect(httpClientMock.history[0]?.params).toEqual({
           param1: "1",
           param2: "2",
         });
