@@ -2,6 +2,9 @@ import axios, { AxiosHeaders, AxiosInstance } from 'axios';
 import { bookmarkMock } from "../bookmarkMock";
 import { addInstance } from "./instances";
 import { SchemaType } from "@omariosouto/common-schema";
+import { deduplicateRequestsInterceptor } from "./deduplicateRequestsInterceptor";
+
+export { clearCache } from "./deduplicateRequestsInterceptor";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -23,11 +26,10 @@ export type HttpRequestOptions = {
   url: string;
   body?: any;
   bookmarks?: HttpClientBookmarks;
-  // TODO: Circuit Breaker
   retry?: number;
   // retryDelay?: number;
   // TODO: Memory Cache
-  // ???
+  staleTime?: number;
 }
 
 export type HttpClientHeaders = AxiosHeaders;
@@ -65,6 +67,7 @@ export function createHttpClient(): HttpClientInstance {
         url,
         body,
         retry,
+        staleTime,
         bookmarks = {},
       } = options;
       const isURLBookmark = bookmarks[url] !== undefined;
@@ -87,6 +90,7 @@ export function createHttpClient(): HttpClientInstance {
         url: requestUrl,
         retry,
         data: body,
+        staleTime,
         bookmark,
       } as any);
     },
@@ -125,12 +129,4 @@ function circuitBreakerInterceptor(axiosInstance: AxiosInstance) {
     // Tenta novamente a requisição
     return axiosInstance(config);
   });
-}
-
-function deduplicateRequestsInterceptor(_axiosInstance: AxiosInstance) {
-  // Before the request goes out, check if there is a request with the same URL and method
-  // If the cache is not expired, return the cached response
-  // If the cache is expired, remove the request from the cache and make a new request
-  // Só pode cachear requests GET
-  // staleTime: 2000 * 60 * 5, // 5 minutes
 }

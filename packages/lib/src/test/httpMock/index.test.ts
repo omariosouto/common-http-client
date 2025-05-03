@@ -6,7 +6,7 @@ describe("httpMock", () => {
   describe("WHEN using the default HttpClient", () => {
     it("always RETURNs it's mock it as expected", async () => {
       httpMock.on("GET", "https://example.com").reply(200, {
-        message: "default",
+        message: "first request",
       });
 
       const { body } = await HttpClient.request({
@@ -14,7 +14,7 @@ describe("httpMock", () => {
         url: "https://example.com",
       });
 
-      expect(body).toEqual({ message: "default" });
+      expect(body).toEqual({ message: "first request" });
     });
   });
 
