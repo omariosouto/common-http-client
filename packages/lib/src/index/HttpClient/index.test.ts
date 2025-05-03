@@ -9,15 +9,15 @@ describe("HttpClient", () => {
   describe("WHEN making an HTTP call", () => {
     it("RETURNs it's mock it as expected", async () => {
       httpMock.on("GET", "https://example.com").reply(200, {
-        data: "mocked data",
+        message: "mocked data",
       });
 
-      const { data } = await HttpClient.request({
+      const { body } = await HttpClient.request({
         method: "GET",
         url: "https://example.com",
       });
 
-      expect(data).toEqual({ data: "mocked data" });
+      expect(body).toEqual({ message: "mocked data" });
     });
     describe("AND using bookmarks", () => {
       it("RETURNs it's mock it as expected", async () => {
@@ -32,7 +32,7 @@ describe("HttpClient", () => {
             methods: {
               GET: {
                 response: { 200: DemoWireInSchema }
-              }
+              },
             }
           },
         };
@@ -42,17 +42,21 @@ describe("HttpClient", () => {
         const payloadMock = schemaGenerate(DemoWireInSchema);
 
         // 1. Add the proper mocks relative to the bookmarks
-        httpMock.set({
-          "demo-request": {
-            "get": {
-              status: 200,
-              body: payloadMock,
-            }
-          },
-        });
+        httpMock.set(
+
+          {
+            "demo-request": {
+              "get": {
+                status: 200,
+                body: payloadMock,
+              }
+            },
+          }
+
+        );
 
         // TODO: Make the output be body instead of data
-        const { data: body } = await HttpClient.request({
+        const { body } = await HttpClient.request({
           url: "demo-request",
           method: "GET",
           bookmarks,

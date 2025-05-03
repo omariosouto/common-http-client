@@ -49,6 +49,11 @@ export function createHttpClient(): HttpClientInstance {
   deduplicateRequestsInterceptor(axiosInstance);
   circuitBreakerInterceptor(axiosInstance);
 
+  axiosInstance.interceptors.response.use((config) => {
+    (config as any).body = config.data;
+    return config;
+  });
+
   const httpClientInstance: HttpClientInstance = {
     setBookmarkProxy(intercepted: any) {
       bookmarkMock.set(intercepted);
@@ -66,7 +71,7 @@ export function createHttpClient(): HttpClientInstance {
       const isURLBookmark = bookmarks[url] !== undefined;
       requestUrl = url;
 
-      if(isURLBookmark) {
+      if (isURLBookmark) {
         bookmark = url;
         requestUrl = bookmarks[url]?.url ?? '';
         const bookmarkProxy = bookmarkMock.get();
@@ -75,7 +80,7 @@ export function createHttpClient(): HttpClientInstance {
           data: bookmarkProxy[bookmarkProxyKey],
         };
 
-        if(bookmarkProxy[bookmarkProxyKey]) return response;
+        if (bookmarkProxy[bookmarkProxyKey]) return response;
       }
 
       return axiosInstance.request({
