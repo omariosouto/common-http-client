@@ -22,15 +22,22 @@ export type HttpClientBookmarks = {
 };
 
 export type HttpRequestOptions = {
-  method: HttpMethod;
+  /** This value defines the request URL or Bookmark */
   url: string;
+  /** This value defines the request method */
+  method: HttpMethod;
+  /** This value defines the request query string */
   params?: Record<string, string>;
+  /** This value defines the request headers */
+  headers?: HttpClientHeaders;
+  /** This value defines the request body */
   body?: any;
-  bookmarks?: HttpClientBookmarks;
+  /** This value defines how many times the request will be retried in case of failure before throwing an error */
   retry?: number;
-  // retryDelay?: number;
-  // TODO: Memory Cache
+  /** This value defines for how long the cache for a GET request to an external endpoint will remain */
   staleTime?: number;
+  /** This value defines the request bookmarks */
+  bookmarks?: HttpClientBookmarks;
 }
 
 export type HttpClientHeaders = AxiosHeaders;
