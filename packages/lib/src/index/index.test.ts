@@ -17,6 +17,14 @@ const bookmarks: HttpClientBookmarks = {
       },
     }
   },
+  "demo-request-with-params": {
+    url: "https://mydomain.com/api/users/:param1/group/:param2",
+    methods: {
+      GET: {
+        response: { 200: DemoWireInSchema }
+      },
+    }
+  }
 };
 
 describe("HttpClient Usage", () => {
@@ -38,6 +46,33 @@ describe("HttpClient Usage", () => {
       expect(response.status).toEqual(200);
     });
 
+    describe("AND this http call has custom url parameters", () => {
+      it("RETURNs the content as expected", async () => {
+        // 0. Set the mock
+        httpClientMock.on("GET", "https://site.com/api/users/:param1/group/:param2").reply(200, {
+          content: "mocked data with params",
+        });
+
+        // 1. Trigger the request
+        const response = await HttpClient.request({
+          url: "https://site.com/api/users/:param1/group/:param2",
+          method: "GET",
+          params: { param1: "1", param2: (2).toString() },
+        });
+
+        // 2. Validate the response
+        expect(response.body).toEqual({ content: "mocked data with params" });
+        expect(response.status).toEqual(200);
+        // 2.1. Validate the request
+        expect(httpClientMock.history.length).toEqual(1);
+        expect(httpClientMock.history[0]?.queryParams).toEqual(undefined);
+        expect(httpClientMock.history[0]?.params).toEqual({
+          param1: "1",
+          param2: "2",
+        });
+      });
+    });
+
     describe("AND this http call has query parameters", () => {
       it("RETURNs the content as expected", async () => {
         // 0. Set the mock
@@ -49,7 +84,7 @@ describe("HttpClient Usage", () => {
         const response = await HttpClient.request({
           url: "https://site.com/api",
           method: "GET",
-          params: { param1: "1", param2: (2).toString() },
+          queryParams: { param1: "1", param2: (2).toString() },
         });
 
         // 2. Validate the response
@@ -57,7 +92,7 @@ describe("HttpClient Usage", () => {
         expect(response.status).toEqual(200);
         // 2.1. Validate the request
         expect(httpClientMock.history.length).toEqual(1);
-        expect(httpClientMock.history[0]?.params).toEqual({
+        expect(httpClientMock.history[0]?.queryParams).toEqual({
           param1: "1",
           param2: "2",
         });
@@ -115,6 +150,44 @@ describe("HttpClient Usage", () => {
       expect(response.body).toEqual(payloadMock);
       expect(response.status).toEqual(200);
     });
+
+    describe("AND this http call has custom url parameters", () => {
+      it("RETURNs the content as expected", async () => {
+        // 0. Set the mock
+        const payloadMock = schemaGenerate(DemoWireInSchema);
+        httpClientMock.set({
+          "demo-request-with-params": {
+            "get": {
+              status: 200,
+              body: payloadMock,
+            }
+          },
+        });
+
+        // 1. Trigger the request
+        const response = await HttpClient.request({
+          url: "demo-request-with-params",
+          method: "GET",
+          params: { 
+            param1: "1",
+            param2: (2).toString(),
+          },
+          bookmarks,
+        });
+
+        // 2. Validate the response
+        expect(response.body).toEqual(payloadMock);
+        expect(response.status).toEqual(200);
+        // 2.1. Validate the request
+        expect(httpClientMock.history.length).toEqual(1);
+        expect(httpClientMock.history[0]?.queryParams).toEqual(undefined);
+        expect(httpClientMock.history[0]?.params).toEqual({
+          param1: "1",
+          param2: "2",
+        });
+      });
+    });
+
     describe("AND this http call has query parameters", () => {
       it("RETURNs the content as expected", async () => {
         // 0. Set the mock
@@ -132,7 +205,7 @@ describe("HttpClient Usage", () => {
         const response = await HttpClient.request({
           url: "demo-request",
           method: "GET",
-          params: { param1: "1", param2: (2).toString() },
+          queryParams: { param1: "1", param2: (2).toString() },
           bookmarks,
         });
 
@@ -141,7 +214,7 @@ describe("HttpClient Usage", () => {
         expect(response.status).toEqual(201);
         // 2.1. Validate the request
         expect(httpClientMock.history.length).toEqual(1);
-        expect(httpClientMock.history[0]?.params).toEqual({
+        expect(httpClientMock.history[0]?.queryParams).toEqual({
           param1: "1",
           param2: "2",
         });

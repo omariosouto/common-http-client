@@ -27,6 +27,8 @@ export type HttpRequestOptions = {
   /** This value defines the request method */
   method: HttpMethod;
   /** This value defines the request query string */
+  queryParams?: Record<string, string>;
+  /** This value defines the request URL parameters */
   params?: Record<string, string>;
   /** This value defines the request headers */
   headers?: Record<string, string>;
@@ -82,6 +84,7 @@ export function createHttpClient(): HttpClientInstance {
         body,
         retry,
         staleTime,
+        queryParams,
         params,
         headers,
         bookmarks = {},
@@ -103,12 +106,13 @@ export function createHttpClient(): HttpClientInstance {
 
       return axiosInstance.request({
         method,
+        params,
         url: requestUrl,
         retry,
         data: body,
         staleTime,
         headers,
-        params,
+        queryParams,
         bookmark,
       } as any);
     },
