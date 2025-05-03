@@ -1,8 +1,8 @@
 import { beforeEach } from "vitest";
-import { httpClientMockReset } from "../src/test";
-import { httpClientClearCache } from "../src/index";
+import { resetCommonUIWeb } from "@omariosouto/common-ui-web/test-setup";
+import { resetHttpClient } from "@omariosouto/common-http-client/test-setup";
 
 beforeEach(() => {
-  httpClientMockReset();
-  httpClientClearCache();
+  resetCommonUIWeb();
+  resetHttpClient();
 });
