@@ -2,7 +2,16 @@ import { AxiosRequestConfig } from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
 import { HttpClientHeaders, HttpMethod, HttpRequestOptions } from "../../index";
 import { getInstances } from "../../index/createHttpClient/instances";
-import { HttpClientBookmarks } from "../../index/createHttpClient/index";
+
+
+type HttpClientBookmarkMocks = {
+  [key: string]: {
+    [key in HttpMethod]?: {
+      status: number;
+      body: any;
+    };
+  };
+}
 
 type HttpMockHistoryEntry = {} & HttpRequestOptions;
 type HttpMockHistory = HttpMockHistoryEntry[];
@@ -142,23 +151,23 @@ export function createHttpMock(): HttpMockAdapter {
       };
     },
     // TODO: Implement this
-    set(bookmarkMocks: any, bookmarks: HttpClientBookmarks) {
+    set(bookmarkMocks: HttpClientBookmarkMocks) {
       refreshMocks();
       const mocks = internalMocks;
 
       mocks.forEach((mock) => {
         mock.onAny().reply((config) => {
-          const { method, url } = config;
+          const { method } = config;
           const bookmark = (config as any).bookmark;
 
           if(bookmarkMocks[bookmark]) {
-            const status = bookmarkMocks[bookmark][method].status;
-            const body = bookmarkMocks[bookmark][method].body;
+            const bookmarkEntry = bookmarkMocks[bookmark]?.[method as HttpMethod];
+            const status = bookmarkEntry?.status ?? 500;
+            const body = bookmarkEntry?.body ?? {};
             return [status, body];
           }
-          
 
-          return [200, {}];
+          return [500, {}];
         });
       });
 

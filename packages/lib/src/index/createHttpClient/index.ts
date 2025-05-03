@@ -1,10 +1,22 @@
 import axios, { AxiosHeaders, AxiosInstance } from 'axios';
 import { bookmarkMock } from "../bookmarkMock";
 import { addInstance } from "./instances";
+import { SchemaType } from "@omariosouto/common-schema";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
-export type HttpClientBookmarks = any;
+export type HttpClientBookmarks = {
+  [key: string]: {
+    url: string;
+    methods: {
+      [key in HttpMethod]?: {
+        response: {
+          [key: number]: SchemaType;
+        }
+      }
+    }
+  }
+};
 
 export type HttpRequestOptions = {
   method: HttpMethod;
@@ -51,12 +63,12 @@ export function createHttpClient(): HttpClientInstance {
         retry,
         bookmarks = {},
       } = options;
-      const isURLBookmark = Object.keys(bookmarks).includes(url);
+      const isURLBookmark = bookmarks[url] !== undefined;
       requestUrl = url;
 
       if(isURLBookmark) {
         bookmark = url;
-        requestUrl = bookmarks[url].url;
+        requestUrl = bookmarks[url]?.url ?? '';
         const bookmarkProxy = bookmarkMock.get();
         const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
         const response = {

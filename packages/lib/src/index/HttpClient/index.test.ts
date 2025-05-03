@@ -21,20 +21,22 @@ describe("HttpClient", () => {
     });
     describe("AND using bookmarks", () => {
       it("RETURNs it's mock it as expected", async () => {
+        // =====================================================================
         const DemoWireInSchema = s.object({
           message: s.string(),
         });
 
-        const bookmarks = {
+        const bookmarks: HttpClientBookmarks = {
           "demo-request": {
             url: "https://mydomain.com/api/",
             methods: {
-              get: {
+              GET: {
                 response: { 200: DemoWireInSchema }
               }
             }
           },
-        } satisfies HttpClientBookmarks;
+        };
+        // =====================================================================
 
         // 0. Set the mock
         const payloadMock = schemaGenerate(DemoWireInSchema);
@@ -47,7 +49,7 @@ describe("HttpClient", () => {
               body: payloadMock,
             }
           },
-        }, bookmarks);
+        });
 
         // TODO: Make the output be body instead of data
         const { data: body } = await HttpClient.request({
