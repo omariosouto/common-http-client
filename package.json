@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "main": "index.js",
   "workspaces": [
-    "examples/*",
-    "packages/*"
+    "packages/*",
+    "playground/*"
   ],
   "scripts": {
     "bumper": "npm_config_registry=https://npm.pkg.github.com npx @omariosouto/bumper",
-    "example": "npm exec --workspace=example-nextjs",
+    "example": "npm exec --workspace=example-react-with-http-painel",
     "dev:example": "npm run example -- npm run dev",
     "lib": "npm exec --workspace=@omariosouto/common-http-client",
     "build": "npm run lib -- npm run build",

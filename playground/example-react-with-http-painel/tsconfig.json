@@ -1,0 +1,29 @@
+{
+  "extends": "@omariosouto/tsconfig/config.json",
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx"
+, ".setup/HttpClientDashoardSetup.tsx"  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

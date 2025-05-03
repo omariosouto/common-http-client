@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Possible Imports */
+@source "../../../node_modules/@omariosouto/common-ui-web";
+@source "../../node_modules/@omariosouto/common-ui-web";
+/* ================ */
