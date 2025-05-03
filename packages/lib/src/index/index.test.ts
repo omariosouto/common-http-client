@@ -35,6 +35,7 @@ describe("HttpClient Usage", () => {
 
       // 2. Validate the response
       expect(response.body).toEqual({ content: "mocked data" });
+      expect(response.status).toEqual(200);
     });
 
     describe("AND this http call has query parameters", () => {
@@ -53,6 +54,7 @@ describe("HttpClient Usage", () => {
 
         // 2. Validate the response
         expect(response.body).toEqual({ content: "mocked data with query" });
+        expect(response.status).toEqual(200);
         // 2.1. Validate the request
         expect(httpMock.history.length).toEqual(1);
         expect(httpMock.history[0]?.params).toEqual({
@@ -84,6 +86,7 @@ describe("HttpClient Usage", () => {
 
       // 2. Validate the response
       expect(response.body).toEqual(payloadMock);
+      expect(response.status).toEqual(200);
     });
     describe("AND this http call has query parameters", () => {
       it("RETURNs the content as expected", async () => {
@@ -92,7 +95,7 @@ describe("HttpClient Usage", () => {
         httpMock.set({
           "demo-request": {
             "get": {
-              status: 200,
+              status: 201,
               body: payloadMock,
             }
           },
@@ -108,6 +111,7 @@ describe("HttpClient Usage", () => {
 
         // 2. Validate the response
         expect(response.body).toEqual(payloadMock);
+        expect(response.status).toEqual(201);
         // 2.1. Validate the request
         expect(httpMock.history.length).toEqual(1);
         expect(httpMock.history[0]?.params).toEqual({

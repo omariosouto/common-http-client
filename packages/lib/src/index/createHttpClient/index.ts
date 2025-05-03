@@ -35,8 +35,14 @@ export type HttpRequestOptions = {
 
 export type HttpClientHeaders = AxiosHeaders;
 
+export type HttpClientResponse = {
+  status: number;
+  headers: HttpClientHeaders;
+  body: any;
+}
+
 export type HttpClientInstance = {
-  request: (options: HttpRequestOptions) => Promise<any>;
+  request: (options: HttpRequestOptions) => Promise<HttpClientResponse>;
   setBookmarkProxy: (intercepted: any) => void;
 }
 
