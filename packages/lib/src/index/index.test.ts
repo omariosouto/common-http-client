@@ -1,10 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { HttpClient } from "./index";
+import { s } from "@omariosouto/common-schema";
+import { schemaGenerate } from "@omariosouto/common-schema/test";
+import { HttpClient, HttpClientBookmarks } from "./index";
 import { httpMock } from "../test";
+
+const DemoWireInSchema = s.object({
+  message: s.string(),
+});
+
+const bookmarks: HttpClientBookmarks = {
+  "demo-request": {
+    url: "https://mydomain.com/api/",
+    methods: {
+      GET: {
+        response: { 200: DemoWireInSchema }
+      },
+    }
+  },
+};
 
 describe("HttpClient Usage", () => {
   describe("WHEN making a query HTTP call", () => {
-    // TODO: Add example using bookmarks 
     it("RETURNs the content as expected", async () => {
       // 0. Set the mock
       httpMock.on("GET", "https://site.com/api").reply(200, {
@@ -22,7 +38,6 @@ describe("HttpClient Usage", () => {
     });
 
     describe("AND this http call has query parameters", () => {
-      // TODO: Add example using bookmarks
       it("RETURNs the content as expected", async () => {
         // 0. Set the mock
         httpMock.on("GET", "https://site.com/api").reply(200, {
@@ -39,6 +54,62 @@ describe("HttpClient Usage", () => {
         // 2. Validate the response
         expect(response.body).toEqual({ content: "mocked data with query" });
         // 2.1. Validate the request
+        expect(httpMock.history.length).toEqual(1);
+        expect(httpMock.history[0]?.params).toEqual({
+          param1: "1",
+          param2: "2",
+        });
+      });
+    });
+  });
+  describe("WHEN making a query HTTP call through bookmarks", () => {
+    it("RETURNs the content as expected", async () => {
+      // 0. Set the mock
+      const payloadMock = schemaGenerate(DemoWireInSchema);
+      httpMock.set({
+        "demo-request": {
+          "get": {
+            status: 200,
+            body: payloadMock,
+          }
+        },
+      });
+
+      // 1. Trigger the request
+      const response = await HttpClient.request({
+        url: "demo-request",
+        method: "GET",
+        bookmarks,
+      });
+
+      // 2. Validate the response
+      expect(response.body).toEqual(payloadMock);
+    });
+    describe("AND this http call has query parameters", () => {
+      it("RETURNs the content as expected", async () => {
+        // 0. Set the mock
+        const payloadMock = schemaGenerate(DemoWireInSchema);
+        httpMock.set({
+          "demo-request": {
+            "get": {
+              status: 200,
+              body: payloadMock,
+            }
+          },
+        });
+
+        // 1. Trigger the request
+        const response = await HttpClient.request({
+          url: "demo-request",
+          method: "GET",
+          params: { param1: "1", param2: (2).toString() },
+          bookmarks,
+        });
+
+        // 2. Validate the response
+        expect(response.body).toEqual(payloadMock);
+        // 2.1. Validate the request
+        expect(httpMock.history.length).toEqual(1);
         expect(httpMock.history[0]?.params).toEqual({
           param1: "1",
           param2: "2",
