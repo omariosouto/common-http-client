@@ -6,7 +6,7 @@ type CachedResponse = {
   data: AxiosResponse;
 };
 
-const DEFAULT_STALE_TIME = 1000 * 60 * 5; // 5 minutes
+const DEFAULT_STALE_TIME = 1000 * 60 * 5; // 5 minutes in milliseconds
 const cache = new Map<CacheKey, CachedResponse>();
 
 declare module 'axios' {

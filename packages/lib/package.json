@@ -13,7 +13,8 @@
   "description": "",
   "exports": {
     ".": "./src/index.ts",
-    "./test": "./src/test.ts"
+    "./test": "./src/test.ts",
+    "./test-setup": "./src/test-setup.ts"
   },
   "files": [
     "dist"
