@@ -1,7 +1,7 @@
 import axios, { AxiosHeaders, AxiosInstance } from 'axios';
 import { bookmarkMock } from "../bookmarkMock";
 import { addInstance } from "./instances";
-import { SchemaType } from "@omariosouto/common-schema";
+import { SchemaType, parseSchema } from "@omariosouto/common-schema";
 import { deduplicateRequestsInterceptor } from "./deduplicateRequestsInterceptor";
 
 export { httpClientClearCache } from "./deduplicateRequestsInterceptor";
@@ -16,6 +16,7 @@ export type HttpClientBookmarks = {
         response: {
           [key: number]: SchemaType;
         }
+        request?: SchemaType;
       }
     }
   }
@@ -100,6 +101,9 @@ export function createHttpClient(): HttpClientInstance {
         const response = {
           data: bookmarkProxy[bookmarkProxyKey],
         };
+
+        const requestSchema = bookmarks[url]?.methods?.[method]?.request;
+        if (requestSchema && body) parseSchema(requestSchema, body);
 
         if (bookmarkProxy[bookmarkProxyKey]) return response;
       }

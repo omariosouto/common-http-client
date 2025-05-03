@@ -7,6 +7,9 @@ import { httpClientMock } from "../test";
 const DemoWireInSchema = s.object({
   message: s.string(),
 });
+const DemoWireOutSchema = s.object({
+  message: s.string(),
+});
 
 const bookmarks: HttpClientBookmarks = {
   "demo-request": {
@@ -14,6 +17,10 @@ const bookmarks: HttpClientBookmarks = {
     methods: {
       GET: {
         response: { 200: DemoWireInSchema }
+      },
+      POST: {
+        request: DemoWireOutSchema,
+        response: { 201: DemoWireInSchema }
       },
     }
   },
@@ -23,11 +30,15 @@ const bookmarks: HttpClientBookmarks = {
       GET: {
         response: { 200: DemoWireInSchema }
       },
+      POST: {
+        request: DemoWireOutSchema,
+        response: { 201: DemoWireInSchema }
+      },
     }
   }
 };
 
-describe("HttpClient Usage", () => {
+describe("HttpClient for Query Usage", () => {
   describe("WHEN making a query HTTP call", () => {
     it("RETURNs the content as expected", async () => {
       // 0. Set the mock
@@ -168,7 +179,7 @@ describe("HttpClient Usage", () => {
         const response = await HttpClient.request({
           url: "demo-request-with-params",
           method: "GET",
-          params: { 
+          params: {
             param1: "1",
             param2: (2).toString(),
           },
@@ -252,6 +263,78 @@ describe("HttpClient Usage", () => {
             Authorization: "Bearer token",
           })
         );
+      });
+    });
+  });
+});
+
+describe("HttpClient for Mutation Usage", () => {
+  describe("WHEN making a mutation HTTP call", () => {
+    it("RETURNs the content as expected", async () => {
+      // 0. Set the mock
+      httpClientMock.on("POST", "https://site.com/api").reply(201, {
+        content: "mocked data",
+      });
+
+      // 1. Trigger the request
+      const response = await HttpClient.request({
+        url: "https://site.com/api",
+        method: "POST",
+        body: { name: "test" },
+      });
+
+      // 2. Validate the response
+      expect(response.body).toEqual({ content: "mocked data" });
+      expect(response.status).toEqual(201);
+    });
+  });
+  describe("WHEN making a mutation HTTP call through bookmarks", () => {
+    it("RETURNs the content as expected", async () => {
+      // 0. Set the mock
+      const payloadMock = schemaGenerate(DemoWireInSchema);
+      httpClientMock.set({
+        "demo-request": {
+          "post": {
+            status: 201,
+            body: payloadMock,
+          }
+        },
+      });
+
+      // 1. Trigger the request
+      const response = await HttpClient.request({
+        url: "demo-request",
+        method: "POST",
+        body: { message: "test" },
+        bookmarks,
+      });
+
+      // 2. Validate the response
+      expect(response.body).toEqual(payloadMock);
+      expect(response.status).toEqual(201);
+    });
+    describe("AND the body didn't match the schema", () => {
+      it("THROWS an error", async () => {
+        // 0. Set the mock
+        httpClientMock.set({
+          "demo-request": {
+            "post": {
+              status: 201,
+              body: schemaGenerate(DemoWireInSchema),
+            }
+          },
+        });
+
+        // 1. Trigger the request
+        await expect(() =>
+          HttpClient.request({
+            url: "demo-request",
+            method: "POST",
+            body: { invalidBody: 1 },
+            bookmarks,
+          })
+        // 2. Validate the response, given that the body didn't match the schema
+        ).rejects.toThrowError();
       });
     });
   });
