@@ -6,15 +6,15 @@ describe("httpMock", () => {
   describe("WHEN using the default HttpClient", () => {
     it("always RETURNs it's mock it as expected", async () => {
       httpMock.on("GET", "https://example.com").reply(200, {
-        data: "default",
+        message: "default",
       });
 
-      const { data } = await HttpClient.request({
+      const { body } = await HttpClient.request({
         method: "GET",
         url: "https://example.com",
       });
 
-      expect(data).toEqual({ data: "default" });
+      expect(body).toEqual({ message: "default" });
     });
   });
 
@@ -36,30 +36,30 @@ describe("httpMock", () => {
       httpMock
         .on("POST", "https://example.com")
         .reply(200, {
-          data: "custom",
+          message: "custom",
         })
 
       httpMock
         .on("GET", "https://example.com")
         .reply(200, {
-          data: "default",
+          message: "default",
         });
 
       const customHttpResponse = await CustomHttpClient.request({
         method: "POST",
         url: "https://example.com",
         body: {
-          data: "custom payload",
+          message: "custom payload",
         }
       });
-      expect(customHttpResponse.data).toEqual({ data: "custom" });
+      expect(customHttpResponse.body).toEqual({ message: "custom" });
 
       const defaultHttpResponse = await HttpClient.request({
         method: "GET",
         url: "https://example.com",
       });
 
-      expect(defaultHttpResponse.data).toEqual({ data: "default" });
+      expect(defaultHttpResponse.body).toEqual({ message: "default" });
     });
   });
 });
