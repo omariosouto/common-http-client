@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { s } from "@omariosouto/common-schema";
+import { schemaGenerate } from "@omariosouto/common-schema/test";
 import { HttpClient } from "./index";
 import { httpMock } from "../../test";
+import { HttpClientBookmarks } from "../createHttpClient";
 
 describe("HttpClient", () => {
   describe("WHEN making an HTTP call", () => {
@@ -12,9 +15,49 @@ describe("HttpClient", () => {
       const { data } = await HttpClient.request({
         method: "GET",
         url: "https://example.com",
-      });      
+      });
 
       expect(data).toEqual({ data: "mocked data" });
+    });
+    describe("AND using bookmarks", () => {
+      it("RETURNs it's mock it as expected", async () => {
+        const DemoWireInSchema = s.object({
+          message: s.string(),
+        });
+
+        const bookmarks = {
+          "demo-request": {
+            url: "https://mydomain.com/api/",
+            methods: {
+              get: {
+                response: { 200: DemoWireInSchema }
+              }
+            }
+          },
+        } satisfies HttpClientBookmarks;
+
+        // 0. Set the mock
+        const payloadMock = schemaGenerate(DemoWireInSchema);
+
+        // 1. Add the proper mocks relative to the bookmarks
+        httpMock.set({
+          "demo-request": {
+            "get": {
+              status: 200,
+              body: payloadMock,
+            }
+          },
+        }, bookmarks);
+
+        // TODO: Make the output be body instead of data
+        const { data: body } = await HttpClient.request({
+          url: "demo-request",
+          method: "GET",
+          bookmarks,
+        });
+
+        expect(body).toEqual(payloadMock);
+      });
     });
   });
 });

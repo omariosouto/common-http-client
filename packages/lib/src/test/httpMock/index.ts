@@ -2,6 +2,7 @@ import { AxiosRequestConfig } from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
 import { HttpClientHeaders, HttpMethod, HttpRequestOptions } from "../../index";
 import { getInstances } from "../../index/createHttpClient/instances";
+import { HttpClientBookmarks } from "../../index/createHttpClient/index";
 
 type HttpMockHistoryEntry = {} & HttpRequestOptions;
 type HttpMockHistory = HttpMockHistoryEntry[];
@@ -32,6 +33,7 @@ type ResponseSpecFunc = <T = any>(
 ) => HttpMockAdapter;
 
 type HttpMockAdapter = {
+  set: any;
   on: (method: HttpMethod, url: string) => {
     reply: ResponseSpecFunc;
     replyOnce: ResponseSpecFunc;
@@ -139,6 +141,44 @@ export function createHttpMock(): HttpMockAdapter {
         },
       };
     },
+    // TODO: Implement this
+    set(bookmarkMocks: any, bookmarks: HttpClientBookmarks) {
+      refreshMocks();
+      const mocks = internalMocks;
+
+      mocks.forEach((mock) => {
+        mock.onAny().reply((config) => {
+          const { method, url } = config;
+          const bookmark = (config as any).bookmark;
+
+          if(bookmarkMocks[bookmark]) {
+            const status = bookmarkMocks[bookmark][method].status;
+            const body = bookmarkMocks[bookmark][method].body;
+            return [status, body];
+          }
+          
+
+          return [200, {}];
+        });
+      });
+
+
+      // // Expected order of requests:
+      // const responses = [
+      //   ["GET", "/foo", 200, { foo: "bar" }],
+      //   ["POST", "/bar", 200],
+      //   ["PUT", "/baz", 200],
+      // ];
+
+      // // Match ALL requests
+      // mock.onAny().reply((config) => {
+      //   const [method, url, ...response] = responses.shift();
+      //   if (config.url === url && config.method.toUpperCase() === method)
+      //     return response;
+      //   // Unexpected request, error out
+      //   return [500, {}];
+      // });
+    }
   };
 
   return newHttpMock;

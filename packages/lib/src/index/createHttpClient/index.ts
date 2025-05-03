@@ -43,6 +43,7 @@ export function createHttpClient(): HttpClientInstance {
     },
     async request(options: HttpRequestOptions) {
       let requestUrl;
+      let bookmark;
       const {
         method,
         url,
@@ -50,9 +51,11 @@ export function createHttpClient(): HttpClientInstance {
         retry,
         bookmarks = {},
       } = options;
+      const isURLBookmark = Object.keys(bookmarks).includes(url);
       requestUrl = url;
 
-      if(bookmarks[url]) {
+      if(isURLBookmark) {
+        bookmark = url;
         requestUrl = bookmarks[url].url;
         const bookmarkProxy = bookmarkMock.get();
         const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
@@ -68,6 +71,7 @@ export function createHttpClient(): HttpClientInstance {
         url: requestUrl,
         retry,
         data: body,
+        bookmark,
       } as any);
     },
     ...({
