@@ -53,7 +53,8 @@ describe("httpMock", () => {
         }
       });
       expect(customHttpResponse.body).toEqual({ message: "custom" });
-
+      expect(httpMock.history.at(0)?.body).toEqual(JSON.stringify({message: "custom payload"}));
+      
       const defaultHttpResponse = await HttpClient.request({
         method: "GET",
         url: "https://example.com",
