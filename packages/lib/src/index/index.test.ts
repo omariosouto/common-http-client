@@ -63,6 +63,33 @@ describe("HttpClient Usage", () => {
         });
       });
     });
+
+    describe("AND this http call has custom headers", () => {
+      it("RETURNs the content as expected", async () => {
+        // 0. Set the mock
+        httpClientMock.on("GET", "https://site.com/api").reply(200, {
+          content: "mocked data with headers",
+        });
+
+        // 1. Trigger the request
+        const response = await HttpClient.request({
+          url: "https://site.com/api",
+          method: "GET",
+          headers: { Authorization: "Bearer token" },
+        });
+
+        // 2. Validate the response
+        expect(response.body).toEqual({ content: "mocked data with headers" });
+        expect(response.status).toEqual(200);
+        // 2.1. Validate the request
+        expect(httpClientMock.history.length).toEqual(1);
+        expect(httpClientMock.history.at(0)?.headers).toEqual(
+          expect.objectContaining({
+            Authorization: "Bearer token",
+          })
+        );
+      });
+    });
   });
   describe("WHEN making a query HTTP call through bookmarks", () => {
     it("RETURNs the content as expected", async () => {
@@ -118,6 +145,40 @@ describe("HttpClient Usage", () => {
           param1: "1",
           param2: "2",
         });
+      });
+    });
+
+    describe("AND this http call has custom headers", () => {
+      it("RETURNs the content as expected", async () => {
+        // 0. Set the mock
+        const payloadMock = schemaGenerate(DemoWireInSchema);
+        httpClientMock.set({
+          "demo-request": {
+            "get": {
+              status: 201,
+              body: payloadMock,
+            }
+          },
+        });
+
+        // 1. Trigger the request
+        const response = await HttpClient.request({
+          url: "demo-request",
+          method: "GET",
+          headers: { Authorization: "Bearer token" },
+          bookmarks,
+        });
+
+        // 2. Validate the response
+        expect(response.body).toEqual(payloadMock);
+        expect(response.status).toEqual(201);
+        // 2.1. Validate the request
+        expect(httpClientMock.history.length).toEqual(1);
+        expect(httpClientMock.history.at(0)?.headers).toEqual(
+          expect.objectContaining({
+            Authorization: "Bearer token",
+          })
+        );
       });
     });
   });

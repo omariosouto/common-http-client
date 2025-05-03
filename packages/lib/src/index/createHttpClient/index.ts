@@ -29,7 +29,7 @@ export type HttpRequestOptions = {
   /** This value defines the request query string */
   params?: Record<string, string>;
   /** This value defines the request headers */
-  headers?: HttpClientHeaders;
+  headers?: Record<string, string>;
   /** This value defines the request body */
   body?: any;
   /** This value defines how many times the request will be retried in case of failure before throwing an error */
@@ -83,6 +83,7 @@ export function createHttpClient(): HttpClientInstance {
         retry,
         staleTime,
         params,
+        headers,
         bookmarks = {},
       } = options;
       const isURLBookmark = bookmarks[url] !== undefined;
@@ -106,6 +107,7 @@ export function createHttpClient(): HttpClientInstance {
         retry,
         data: body,
         staleTime,
+        headers,
         params,
         bookmark,
       } as any);
