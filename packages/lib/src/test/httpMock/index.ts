@@ -43,7 +43,7 @@ type ResponseSpecFunc = <T = any>(
 
 type HttpMockAdapter = {
   set: any;
-  on: (method: HttpMethod, url: string) => {
+  on: (method: HttpMethod, url: string, params?: Record<string, string>) => {
     reply: ResponseSpecFunc;
     replyOnce: ResponseSpecFunc;
     replyNetworkError(): HttpMockAdapter;
@@ -108,7 +108,7 @@ export function createHttpMock(): HttpMockAdapter {
         return [...acc, ...history];
       }, [] as HttpMockHistory);
     },
-    on(method, url) {
+    on(method, url, params) {
       refreshMocks();
 
       type MockMethod =
@@ -120,8 +120,24 @@ export function createHttpMock(): HttpMockAdapter {
         | "onHead"
         | "onOptions";
 
+      let normalizedUrl = url;
+
+      if(params) {
+        const urlParams = Object.keys(params).reduce((acc, key) => {
+          const value = params[key];
+          if (value) {
+            acc[key] = value;
+          }
+          return acc;
+        }, {} as Record<string, string>);
+
+        normalizedUrl = Object.keys(urlParams).reduce((url, key) => {
+          return url.replace(`:${key}`, urlParams[key] || '');
+        }, normalizedUrl);
+      }
+
       const mockMethod = `on${uppercaseFirst(method.toLowerCase())}` as MockMethod;
-      const mockOns = internalMocks.map((mock) => mock[mockMethod](url));
+      const mockOns = internalMocks.map((mock) => mock[mockMethod](normalizedUrl));
 
       return {
         reply(...args) {

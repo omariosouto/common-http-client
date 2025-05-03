@@ -59,8 +59,9 @@ describe("HttpClient for Query Usage", () => {
 
     describe("AND this http call has custom url parameters", () => {
       it("RETURNs the content as expected", async () => {
+        const params = { param1: "1", param2: (2).toString() };
         // 0. Set the mock
-        httpClientMock.on("GET", "https://site.com/api/users/:param1/group/:param2").reply(200, {
+        httpClientMock.on("GET", "https://site.com/api/users/:param1/group/:param2", params).reply(200, {
           content: "mocked data with params",
         });
 
@@ -77,10 +78,9 @@ describe("HttpClient for Query Usage", () => {
         // 2.1. Validate the request
         expect(httpClientMock.history.length).toEqual(1);
         expect(httpClientMock.history[0]?.queryParams).toEqual(undefined);
-        expect(httpClientMock.history[0]?.params).toEqual({
-          param1: "1",
-          param2: "2",
-        });
+        expect(httpClientMock.history[0]?.url).toEqual(
+          `https://site.com/api/users/${params.param1}/group/${params.param2}`
+        );
       });
     });
 
@@ -192,10 +192,9 @@ describe("HttpClient for Query Usage", () => {
         // 2.1. Validate the request
         expect(httpClientMock.history.length).toEqual(1);
         expect(httpClientMock.history[0]?.queryParams).toEqual(undefined);
-        expect(httpClientMock.history[0]?.params).toEqual({
-          param1: "1",
-          param2: "2",
-        });
+        expect(httpClientMock.history[0]?.url).toEqual(
+          "https://mydomain.com/api/users/1/group/2"
+        );
       });
     });
 

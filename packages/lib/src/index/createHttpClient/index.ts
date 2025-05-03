@@ -108,9 +108,24 @@ export function createHttpClient(): HttpClientInstance {
         if (bookmarkProxy[bookmarkProxyKey]) return response;
       }
 
+      if(params) {
+        const urlParams = Object.keys(params).reduce((acc, key) => {
+          const value = params[key];
+          if (value) {
+            acc[key] = value;
+          }
+          return acc;
+        }, {} as Record<string, string>);
+
+        requestUrl = Object.keys(urlParams).reduce((url, key) => {
+          return url.replace(`:${key}`, urlParams[key] || '');
+        }, requestUrl);
+      }
+
       return axiosInstance.request({
         method,
-        params,
+        // TODO: Fix this, to enable the requests be made through endpoints like: `https://api.github.com/users/:user`
+        urlParams: params,
         url: requestUrl,
         retry,
         data: body,
