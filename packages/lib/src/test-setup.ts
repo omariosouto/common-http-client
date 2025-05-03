@@ -1,8 +1,7 @@
-import { beforeEach } from "vitest";
 import { httpClientMockReset } from "./test";
-import { httpClientClearCache } from "./index";
+import { httpClientClearCache } from "./index/createHttpClient/deduplicateRequestsInterceptor";
 
-beforeEach(() => {
+export function resetHttpClient() {
   httpClientMockReset();
   httpClientClearCache();
-});
+};
