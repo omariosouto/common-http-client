@@ -22,7 +22,6 @@ export type HttpRequestOptions = {
   method: HttpMethod;
   url: string;
   body?: any;
-  // TODO: Bookmark
   bookmarks?: HttpClientBookmarks;
   // TODO: Circuit Breaker
   retry?: number;
