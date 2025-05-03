@@ -42,5 +42,6 @@ export default defineConfig({
   dts: true,
   outDir: 'dist',
   bundle: true,
+  noExternal: ['axios'], // 👈 this forces bundling axios
   clean: true
 });
