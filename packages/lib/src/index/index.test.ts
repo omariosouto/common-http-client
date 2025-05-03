@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { s } from "@omariosouto/common-schema";
+import { s, SchemaError } from "@omariosouto/common-schema";
 import { schemaGenerate } from "@omariosouto/common-schema/test";
 import { HttpClient, HttpClientBookmarks } from "./index";
 import { httpClientMock } from "../test";
@@ -335,6 +335,16 @@ describe("HttpClient for Mutation Usage", () => {
           })
         // 2. Validate the response, given that the body didn't match the schema
         ).rejects.toThrowError();
+
+        await HttpClient.request({
+          url: "demo-request",
+          method: "POST",
+          body: { invalidBody: 1 },
+          bookmarks,
+        })
+        .catch((error) => {
+          expect(error).toBeInstanceOf(SchemaError);
+        });
       });
     });
   });
