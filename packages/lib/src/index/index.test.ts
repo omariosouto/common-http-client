@@ -76,7 +76,6 @@ describe("HttpClient for Query Usage", () => {
       // 2. Validate the response
       expect(bookmarkResponse.body).toEqual(payloadMock);
       expect(bookmarkResponse.status).toEqual(200);
-
     });
 
     describe("AND this http call has custom url parameters", () => {
