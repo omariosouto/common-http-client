@@ -98,14 +98,18 @@ export function createHttpClient(): HttpClientInstance {
         requestUrl = bookmarks[url]?.url ?? '';
         const bookmarkProxy = bookmarkMock.get();
         const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
-        const response = {
-          data: bookmarkProxy[bookmarkProxyKey],
-        };
-
         const requestSchema = bookmarks[url]?.methods?.[method]?.request;
         if (requestSchema && body) parseSchema(requestSchema, body);
 
-        if (bookmarkProxy[bookmarkProxyKey]) return response;
+        if (bookmarkProxy[bookmarkProxyKey]) {
+          const bookmarkProxyResponse: HttpClientResponse = {
+            status: bookmarkProxy[bookmarkProxyKey].status,
+            headers: {} as HttpClientHeaders,
+            body: bookmarkProxy[bookmarkProxyKey].body,
+          };
+
+          return bookmarkProxyResponse;
+        };
       }
 
       if(params) {
@@ -124,7 +128,6 @@ export function createHttpClient(): HttpClientInstance {
 
       return axiosInstance.request({
         method,
-        // TODO: Fix this, to enable the requests be made through endpoints like: `https://api.github.com/users/:user`
         urlParams: params,
         url: requestUrl,
         retry,
