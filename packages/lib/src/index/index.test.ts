@@ -40,7 +40,7 @@ const bookmarks: HttpClientBookmarks = {
 
 describe("HttpClient for Query Usage", () => {
   describe("WHEN making a query HTTP call", () => {
-    it("RETURNs the content as expected", async () => {
+    it.only("RETURNs the content as expected", async () => {
       // 0. Set the mock
       httpClientMock.on("GET", "https://site.com/api").reply(200, {
         content: "mocked data",
@@ -55,13 +55,35 @@ describe("HttpClient for Query Usage", () => {
       // 2. Validate the response
       expect(response.body).toEqual({ content: "mocked data" });
       expect(response.status).toEqual(200);
+
+      // ================================================================
+      // [Bookmarks usage]
+      // ================================================================
+      
+      // 0. Set the mock
+      const payloadMock = schemaGenerate(DemoWireInSchema);
+      httpClientMock
+        .on("GET", "demo-request", { bookmarks })
+        .reply(200, payloadMock);
+
+      // 1. Trigger the request
+      const bookmarkResponse = await HttpClient.request({
+        url: "demo-request",
+        method: "GET",
+        bookmarks,
+      });
+
+      // 2. Validate the response
+      expect(bookmarkResponse.body).toEqual(payloadMock);
+      expect(bookmarkResponse.status).toEqual(200);
+
     });
 
     describe("AND this http call has custom url parameters", () => {
       it("RETURNs the content as expected", async () => {
         const params = { param1: "1", param2: (2).toString() };
         // 0. Set the mock
-        httpClientMock.on("GET", "https://site.com/api/users/:param1/group/:param2", params).reply(200, {
+        httpClientMock.on("GET", "https://site.com/api/users/:param1/group/:param2", { params }).reply(200, {
           content: "mocked data with params",
         });
 
@@ -137,7 +159,8 @@ describe("HttpClient for Query Usage", () => {
       });
     });
   });
-  describe("WHEN making a query HTTP call through bookmarks", () => {
+
+  describe("WHEN making a query HTTP call through bookmarks `.set()`", () => {
     it("RETURNs the content as expected", async () => {
       // 0. Set the mock
       const payloadMock = schemaGenerate(DemoWireInSchema);
@@ -332,7 +355,7 @@ describe("HttpClient for Mutation Usage", () => {
             body: { invalidBody: 1 },
             bookmarks,
           })
-        // 2. Validate the response, given that the body didn't match the schema
+          // 2. Validate the response, given that the body didn't match the schema
         ).rejects.toThrowError();
 
         await HttpClient.request({
@@ -341,9 +364,9 @@ describe("HttpClient for Mutation Usage", () => {
           body: { invalidBody: 1 },
           bookmarks,
         })
-        .catch((error) => {
-          expect(error).toBeInstanceOf(SchemaError);
-        });
+          .catch((error) => {
+            expect(error).toBeInstanceOf(SchemaError);
+          });
       });
     });
   });

@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
-import { HttpClientHeaders, HttpMethod, HttpRequestOptions } from "../../index";
+import { HttpClientBookmarks, HttpClientHeaders, HttpMethod, HttpRequestOptions } from "../../index";
 import { getInstances } from "../../index/createHttpClient/instances";
 
 
@@ -43,7 +43,10 @@ type ResponseSpecFunc = <T = any>(
 
 type HttpMockAdapter = {
   set: any;
-  on: (method: HttpMethod, url: string, params?: Record<string, string>) => {
+  on: (method: HttpMethod, url: string, params?: {
+    bookmarks?: HttpClientBookmarks;
+    params?: Record<string, string>;
+  }) => {
     reply: ResponseSpecFunc;
     replyOnce: ResponseSpecFunc;
     replyNetworkError(): HttpMockAdapter;
@@ -108,7 +111,7 @@ export function createHttpMock(): HttpMockAdapter {
         return [...acc, ...history];
       }, [] as HttpMockHistory);
     },
-    on(method, url, params) {
+    on(method, url, { params, bookmarks } = {}) {
       refreshMocks();
 
       type MockMethod =
@@ -121,6 +124,13 @@ export function createHttpMock(): HttpMockAdapter {
         | "onOptions";
 
       let normalizedUrl = url;
+
+      if(bookmarks) {
+        const bookmarkUrl = bookmarks[url]?.url;
+        if (!bookmarkUrl) throw new Error(`Bookmark ${url} not found`);
+        
+        normalizedUrl = bookmarkUrl;
+      }
 
       if(params) {
         const urlParams = Object.keys(params).reduce((acc, key) => {
