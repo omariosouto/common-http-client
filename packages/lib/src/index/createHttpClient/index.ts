@@ -97,7 +97,10 @@ export function createHttpClient(): HttpClientInstance {
         bookmark = url;
         requestUrl = bookmarks[url]?.url ?? '';
         const bookmarkProxy = bookmarkMock.get();
+        console.log("[bookmarkProxy]", bookmarkProxy);
+
         const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
+        console.log("[bookmarkProxyKey]", bookmarkProxyKey);
         const requestSchema = bookmarks[url]?.methods?.[method]?.request;
         if (requestSchema && body) parseSchema(requestSchema, body);
 
