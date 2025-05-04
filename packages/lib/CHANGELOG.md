@@ -1,3 +1,8 @@
+# 1.0.4 - 2025-5-4
+
+Adding support to bookmark mocks without `.set`
+
+
 # 1.0.3 - 2025-5-4
 
 Minor adjusts to enable the http intercept

@@ -55,13 +55,34 @@ describe("HttpClient for Query Usage", () => {
       // 2. Validate the response
       expect(response.body).toEqual({ content: "mocked data" });
       expect(response.status).toEqual(200);
+
+      // ================================================================
+      // [Bookmarks usage]
+      // ================================================================
+
+      // 0. Set the mock
+      const payloadMock = schemaGenerate(DemoWireInSchema);
+      httpClientMock
+        .on("GET", "demo-request", { bookmarks })
+        .reply(200, payloadMock);
+
+      // 1. Trigger the request
+      const bookmarkResponse = await HttpClient.request({
+        url: "demo-request",
+        method: "GET",
+        bookmarks,
+      });
+
+      // 2. Validate the response
+      expect(bookmarkResponse.body).toEqual(payloadMock);
+      expect(bookmarkResponse.status).toEqual(200);
     });
 
     describe("AND this http call has custom url parameters", () => {
       it("RETURNs the content as expected", async () => {
         const params = { param1: "1", param2: (2).toString() };
         // 0. Set the mock
-        httpClientMock.on("GET", "https://site.com/api/users/:param1/group/:param2", params).reply(200, {
+        httpClientMock.on("GET", "https://site.com/api/users/:param1/group/:param2", { params }).reply(200, {
           content: "mocked data with params",
         });
 
@@ -137,7 +158,8 @@ describe("HttpClient for Query Usage", () => {
       });
     });
   });
-  describe("WHEN making a query HTTP call through bookmarks", () => {
+
+  describe("WHEN making a query HTTP call through bookmarks `.set()`", () => {
     it("RETURNs the content as expected", async () => {
       // 0. Set the mock
       const payloadMock = schemaGenerate(DemoWireInSchema);
@@ -332,7 +354,7 @@ describe("HttpClient for Mutation Usage", () => {
             body: { invalidBody: 1 },
             bookmarks,
           })
-        // 2. Validate the response, given that the body didn't match the schema
+          // 2. Validate the response, given that the body didn't match the schema
         ).rejects.toThrowError();
 
         await HttpClient.request({
@@ -341,10 +363,98 @@ describe("HttpClient for Mutation Usage", () => {
           body: { invalidBody: 1 },
           bookmarks,
         })
-        .catch((error) => {
-          expect(error).toBeInstanceOf(SchemaError);
+          .catch((error) => {
+            expect(error).toBeInstanceOf(SchemaError);
+          });
+      });
+    });
+  });
+});
+
+describe("HttpClient for Query Usage with failures", () => {
+  describe("WHEN making a query HTTP call", () => {
+    describe("AND it fails by some reason attempt", () => {
+      describe("IF the retry policy IS NOT SET", () => {
+        it("MAKE the request once more to get the expected result", async () => {
+          // 0. Set the mock
+          const payloadMock = schemaGenerate(DemoWireInSchema);
+          httpClientMock
+            .on("GET", "demo-request", { bookmarks })
+            .replyNetworkErrorOnce()
+            .on("GET", "demo-request", { bookmarks })
+            .replyOnce(200, payloadMock);
+
+          // 1. Trigger the request and expect a network error
+          await expect(() =>
+            HttpClient.request({
+              url: "demo-request",
+              method: "GET",
+              bookmarks,
+            })
+          ).rejects.toThrowError("Network Error");
         });
       });
+      describe("IF the retry policy IS SET", () => {
+        it("MAKE the request once more to get the expected result", async () => {
+          // 0. Set the mock
+          const payloadMock = schemaGenerate(DemoWireInSchema);
+          httpClientMock
+            .on("GET", "demo-request", { bookmarks })
+            .replyNetworkErrorOnce()
+            .on("GET", "demo-request", { bookmarks })
+            .replyOnce(200, payloadMock);
+
+          // 1. Trigger the request
+          const bookmarkResponse = await HttpClient.request({
+            url: "demo-request",
+            method: "GET",
+            retry: 1,
+            bookmarks,
+          });
+
+          // 2. Validate the response
+          expect(bookmarkResponse.body).toEqual(payloadMock);
+          expect(bookmarkResponse.status).toEqual(200);
+        });
+      });
+    });
+  });
+});
+
+describe("HttpClient for Query Usage with multiple calls to the same URL", () => {
+  describe("WHEN making a query HTTP call", () => {
+    it("RETURNs the content as expected", async () => {
+      // 0. Set the mock
+      const payloadMock = schemaGenerate(DemoWireInSchema);
+      httpClientMock
+        .on("GET", "demo-request", { bookmarks })
+        .reply(200, payloadMock);
+
+      // 1. Trigger the request
+      const bookmarkResponse = await HttpClient.request({
+        url: "demo-request",
+        method: "GET",
+        // This is the default value
+        staleTime: 1000 * 60 * 5, // 5 minutes in milliseconds
+        bookmarks,
+      });
+      await HttpClient.request({
+        url: "demo-request",
+        method: "GET",
+        bookmarks,
+      });
+      await HttpClient.request({
+        url: "demo-request",
+        method: "GET",
+        bookmarks,
+      });
+
+      // 2. Validate the response
+      expect(bookmarkResponse.body).toEqual(payloadMock);
+      expect(bookmarkResponse.status).toEqual(200);
+
+      // 3. Validate how many times the request go to the external world
+      expect(httpClientMock.history.length).toEqual(1);
     });
   });
 });
