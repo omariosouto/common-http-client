@@ -40,7 +40,7 @@ const bookmarks: HttpClientBookmarks = {
 
 describe("HttpClient for Query Usage", () => {
   describe("WHEN making a query HTTP call", () => {
-    it.only("RETURNs the content as expected", async () => {
+    it("RETURNs the content as expected", async () => {
       // 0. Set the mock
       httpClientMock.on("GET", "https://site.com/api").reply(200, {
         content: "mocked data",
