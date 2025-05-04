@@ -1,3 +1,8 @@
+# 1.0.3-beta2025541746317719PR4 - 2025-5-4
+
+Minor adjusts to enable the http intercept
+
+
 # 1.0.2 - 2025-5-3
 
 This PR adds support to:
