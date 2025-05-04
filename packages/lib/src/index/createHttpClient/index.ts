@@ -98,14 +98,19 @@ export function createHttpClient(): HttpClientInstance {
         requestUrl = bookmarks[url]?.url ?? '';
         const bookmarkProxy = bookmarkMock.get();
         const bookmarkProxyKey = `${url}::${method}`.toLowerCase();
-        const response = {
-          data: bookmarkProxy[bookmarkProxyKey],
-        };
-
         const requestSchema = bookmarks[url]?.methods?.[method]?.request;
         if (requestSchema && body) parseSchema(requestSchema, body);
 
-        if (bookmarkProxy[bookmarkProxyKey]) return response;
+        if (bookmarkProxy[bookmarkProxyKey]) {
+          const bookmarkProxyResponse: HttpClientResponse = {
+            // TODO: Make this come through the bookmark too
+            status: 200,
+            headers: {} as HttpClientHeaders,
+            body: bookmarkProxy[bookmarkProxyKey],
+          };
+
+          return bookmarkProxyResponse;
+        };
       }
 
       if(params) {
