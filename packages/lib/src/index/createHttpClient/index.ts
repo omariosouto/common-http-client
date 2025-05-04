@@ -128,7 +128,6 @@ export function createHttpClient(): HttpClientInstance {
 
       return axiosInstance.request({
         method,
-        // TODO: Fix this, to enable the requests be made through endpoints like: `https://api.github.com/users/:user`
         urlParams: params,
         url: requestUrl,
         retry,
