@@ -1,3 +1,8 @@
+# 1.0.5-beta20259231758647505PR7 - 2025-9-23
+
+This pull request makes a minor documentation update to the `README.md` file, correcting punctuation in the project description.
+
+
 # 1.0.4 - 2025-5-4
 
 Adding support to bookmark mocks without `.set`

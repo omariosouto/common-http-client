@@ -1,6 +1,6 @@
 {
   "name": "@omariosouto/common-http-client",
-  "version": "1.0.4",
+  "version": "1.0.5-beta20259231758647505PR7",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
